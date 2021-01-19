@@ -7,9 +7,17 @@ using System.Threading.Tasks;
 
 namespace Assignment2.Models
 {
+    public enum Period
+    {
+        Monthly, 
+        Quarterly,
+        OnceOff
+    }
+
     public class BillPay
     {
         [Key, Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BillPayId { get; set; }
 
         [Required]
@@ -19,13 +27,14 @@ namespace Assignment2.Models
         public int PayeeId { get; set; }
 
         [Required, Column(TypeName = "decimal(18, 2)")]
+        [DataType(DataType.Currency)]
         public decimal Amount { get; set; }
 
         [Required, DataType(DataType.Date)]
         public DateTime ScheduleDate { get; set; }
 
-        [Required] // TODO Must be M, Q or S
-        public char Period { get; set; }
+        [Required] 
+        public Period Period { get; set; }
 
         [Required, DataType(DataType.Date)]
         public DateTime ModifyDate { get; set; }
