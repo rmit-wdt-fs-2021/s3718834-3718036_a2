@@ -30,6 +30,7 @@ namespace Assignment2.Models
         public int DestAccount { get; set; }
 
         [DataType(DataType.Currency)]
+        [Required, Column(TypeName = "decimal(18, 2)")]
         public decimal Amount { get; set; }
 
         [StringLength(255)]
