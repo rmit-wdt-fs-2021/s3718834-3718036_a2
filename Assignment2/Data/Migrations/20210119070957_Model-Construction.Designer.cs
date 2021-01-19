@@ -4,196 +4,22 @@ using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210119070957_Model-Construction")]
+    partial class ModelConstruction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.2");
-
-            modelBuilder.Entity("Assignment2.Models.Account", b =>
-                {
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AccountType")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CustomerForeignKey")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifyDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("AccountNumber");
-
-                    b.HasIndex("CustomerForeignKey");
-
-                    b.ToTable("Account");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.BillPay", b =>
-                {
-                    b.Property<int>("BillPayId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int?>("AccountForeignKey")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("ModifyDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("PayeeForeignKey")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PayeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Period")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ScheduleDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BillPayId");
-
-                    b.HasIndex("AccountForeignKey");
-
-                    b.HasIndex("PayeeForeignKey");
-
-                    b.ToTable("BillPay");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Customer", b =>
-                {
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("City")
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<int>("State")
-                        .HasMaxLength(20)
-                        .HasColumnType("int");
-
-                    b.Property<string>("Tfn")
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.HasKey("CustomerId");
-
-                    b.ToTable("Customer");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Payee", b =>
-                {
-                    b.Property<int>("PayeeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("City")
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<string>("PayeeName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<int>("State")
-                        .HasMaxLength(20)
-                        .HasColumnType("int");
-
-                    b.HasKey("PayeeId");
-
-                    b.ToTable("Payee");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Transaction", b =>
-                {
-                    b.Property<int>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int?>("AccountForeignKey")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Comment")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("DestAccount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifyDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("int");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("AccountForeignKey");
-
-                    b.ToTable("Transaction");
-                });
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -395,39 +221,6 @@ namespace Assignment2.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Assignment2.Models.Account", b =>
-                {
-                    b.HasOne("Assignment2.Models.Customer", "Customer")
-                        .WithMany("Accounts")
-                        .HasForeignKey("CustomerForeignKey");
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.BillPay", b =>
-                {
-                    b.HasOne("Assignment2.Models.Account", "Account")
-                        .WithMany("BillPays")
-                        .HasForeignKey("AccountForeignKey");
-
-                    b.HasOne("Assignment2.Models.Payee", "Payee")
-                        .WithMany("BillPays")
-                        .HasForeignKey("PayeeForeignKey");
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Payee");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Transaction", b =>
-                {
-                    b.HasOne("Assignment2.Models.Account", "Account")
-                        .WithMany("Transactions")
-                        .HasForeignKey("AccountForeignKey");
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -477,23 +270,6 @@ namespace Assignment2.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Account", b =>
-                {
-                    b.Navigation("BillPays");
-
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Customer", b =>
-                {
-                    b.Navigation("Accounts");
-                });
-
-            modelBuilder.Entity("Assignment2.Models.Payee", b =>
-                {
-                    b.Navigation("BillPays");
                 });
 #pragma warning restore 612, 618
         }
