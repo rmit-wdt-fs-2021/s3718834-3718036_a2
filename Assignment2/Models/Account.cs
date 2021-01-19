@@ -27,5 +27,12 @@ namespace Assignment2.Models
 
         [Required, DataType(DataType.Date)]
         public DateTime ModifyDate { get; set; }
+
+        [ForeignKey("CustomerForeignKey")]
+        public Customer Customer { get; set; }
+
+        public virtual List<Transaction> Transactions { get; set; }
+
+        public virtual List<BillPay> BillPays { get; set; }
     }
 }

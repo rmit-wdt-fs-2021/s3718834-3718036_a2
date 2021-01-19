@@ -32,5 +32,7 @@ namespace Assignment2.Models
         [Phone, Required]
         [RegularExpression("^(\\+61) [0-9]{4} [0-9]{4}")]
         public string Phone { get; set; }
+
+        public virtual List<BillPay> BillPays { get; set; }
     }
 }
