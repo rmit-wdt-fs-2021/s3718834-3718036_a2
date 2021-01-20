@@ -37,7 +37,7 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Deposit(AtmTransactionViewModel viewModel)
+        public async Task<IActionResult> Deposit([Bind("AccountNumber,Amount")] AtmTransactionViewModel viewModel)
         {
             viewModel.Account = await _context.Account.Include(x => x.Transactions).
                 FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
@@ -80,7 +80,7 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Withdraw(AtmTransactionViewModel viewModel)
+        public async Task<IActionResult> Withdraw([Bind("AccountNumber,Amount")] AtmTransactionViewModel viewModel)
         {
             viewModel.Account = await _context.Account.Include(x => x.Transactions).
                 FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
