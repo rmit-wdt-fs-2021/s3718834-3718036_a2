@@ -1,0 +1,32 @@
+﻿@model Assignment2.ViewModels.AtmTransactionViewModel
+@{
+    ViewData["Title"] = "Deposit";
+}
+
+<h1 class="display-4">Account Number @Model.Account.AccountNumber (@Model.Account.AccountType)</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Deposit">
+            <input type="hidden" asp-for="AccountNumber" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                @* ReSharper disable once UnknownCssClass *@
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Deposit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Accounts</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
