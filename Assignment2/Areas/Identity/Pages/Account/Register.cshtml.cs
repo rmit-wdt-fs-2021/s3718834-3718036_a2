@@ -102,8 +102,10 @@ namespace Assignment2.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                Random rnd = new Random();
                 var customer = new Customer
                 {
+                    CustomerId = rnd.Next(1000, 9999),
                     CustomerName = Input.CustomerName,
                     Tfn = Input.Tfn,
                     Address = Input.Address,
@@ -116,6 +118,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
 
                 var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Customer = customer};
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
