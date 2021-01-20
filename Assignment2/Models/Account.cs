@@ -19,6 +19,10 @@ namespace Assignment2.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int AccountNumber { get; set; }
 
+        [DataType(DataType.Currency)]
+        [Required, Column(TypeName = "decimal(18, 2)")]
+        public decimal Balance { get; set; }
+
         [Required]
         public AccountType AccountType { get; set; }
 

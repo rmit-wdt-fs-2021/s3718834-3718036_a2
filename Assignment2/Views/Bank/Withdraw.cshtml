@@ -1,13 +1,13 @@
 ﻿@model Assignment2.ViewModels.AtmTransactionViewModel
 @{
-    ViewData["Title"] = "Deposit";
+    ViewData["Title"] = "Withdraw";
 }
 
 <h1 class="display-4">Account Number @Model.Account.AccountNumber (@Model.Account.AccountType)</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Deposit">
+        <form asp-action="Withdraw">
             <input type="hidden" asp-for="AccountNumber" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -17,7 +17,7 @@
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Deposit" class="btn btn-primary" />
+                <input type="submit" value="Withdraw" class="btn btn-primary" />
             </div>
         </form>
     </div>
