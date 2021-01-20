@@ -36,7 +36,7 @@ namespace Assignment2.Models
         [StringLength(40)]
         public string City { get; set; }
 
-        [StringLength(20)]
+        [EnumDataType(typeof(State))]
         public State State { get; set; }
 
         [StringLength(4)]
@@ -48,5 +48,7 @@ namespace Assignment2.Models
         public string Phone { get; set; }
 
         public virtual List<Account> Accounts { get; set; }
+
+        public virtual ApplicationUser Login { get; set; }
     }
 }

@@ -7,12 +7,18 @@ using Assignment2.Models;
 
 namespace Assignment2.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
         public DbSet<Assignment2.Models.Account> Account { get; set; }
         public DbSet<Assignment2.Models.Customer> Customer { get; set; }
         public DbSet<Assignment2.Models.BillPay> BillPay { get; set; }

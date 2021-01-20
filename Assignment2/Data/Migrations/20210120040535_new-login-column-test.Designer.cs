@@ -4,14 +4,16 @@ using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210120040535_new-login-column-test")]
+    partial class newlogincolumntest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,8 +57,8 @@ namespace Assignment2.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomerForeignKey")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerTag")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -99,10 +101,6 @@ namespace Assignment2.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerForeignKey")
-                        .IsUnique()
-                        .HasFilter("[CustomerForeignKey] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -411,15 +409,6 @@ namespace Assignment2.Data.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Assignment2.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Assignment2.Models.Customer", "Customer")
-                        .WithOne("Login")
-                        .HasForeignKey("Assignment2.Models.ApplicationUser", "CustomerForeignKey");
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Assignment2.Models.BillPay", b =>
                 {
                     b.HasOne("Assignment2.Models.Account", "Account")
@@ -505,8 +494,6 @@ namespace Assignment2.Data.Migrations
             modelBuilder.Entity("Assignment2.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
-
-                    b.Navigation("Login");
                 });
 
             modelBuilder.Entity("Assignment2.Models.Payee", b =>
