@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Assignment2.Data;
 
 namespace Assignment2.Areas.Identity.Pages.Account
 {
@@ -24,17 +25,20 @@ namespace Assignment2.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         [BindProperty]
@@ -74,7 +78,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
             [StringLength(40)]
             public string City { get; set; }
 
-            [StringLength(20)]
+            [EnumDataType(typeof(State))]
             public State State { get; set; }
 
             [StringLength(4)]
@@ -98,7 +102,19 @@ namespace Assignment2.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email};
+                var customer = new Customer
+                {
+                    CustomerName = Input.CustomerName,
+                    Tfn = Input.Tfn,
+                    Address = Input.Address,
+                    City = Input.City,
+                    State = Input.State,
+                    PostCode = Input.PostCode,
+                    Phone = Input.Phone
+                };
+                _context.Customer.Add(customer);
+
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Customer = customer};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
