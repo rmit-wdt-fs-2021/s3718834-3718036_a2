@@ -62,7 +62,28 @@ namespace Assignment2.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            public string CustomTag { get; set; }
+            [Required, StringLength(50)]
+            public string CustomerName { get; set; }
+
+            [StringLength(11)]
+            public string Tfn { get; set; }
+
+            [StringLength(50)]
+            public string Address { get; set; }
+
+            [StringLength(40)]
+            public string City { get; set; }
+
+            [StringLength(20)]
+            public State State { get; set; }
+
+            [StringLength(4)]
+            [RegularExpression("[0-9]{4}")]
+            public string PostCode { get; set; }
+
+            [Phone, Required]
+            [RegularExpression("^(\\+61) [0-9]{4} [0-9]{4}")]
+            public string Phone { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -77,7 +98,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, CustomerTag = Input.CustomTag };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
