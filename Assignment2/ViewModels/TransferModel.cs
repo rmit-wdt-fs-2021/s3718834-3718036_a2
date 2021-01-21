@@ -2,7 +2,7 @@
 
 namespace Assignment2.ViewModels
 {
-    public class AtmTransferModel
+    public class TransferModel
     {
         public int AccountNumber { get; set; }
         public int DestinationAccountNumber { get; set; }

@@ -122,7 +122,7 @@ namespace Assignment2.Controllers
         public async Task<IActionResult> Transfer(int accountNumber, int destinationAccountNumber, string comment)
         {
             return View(
-                new AtmTransferModel
+                new TransferModel
                 {
                     AccountNumber = accountNumber,
                     DestinationAccountNumber = destinationAccountNumber,
@@ -134,7 +134,7 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] AtmTransferModel viewModel)
+        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] TransferModel viewModel)
         {
             viewModel.Account = await _context.Account.Include(x => x.Transactions).
                 FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
