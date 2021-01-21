@@ -80,7 +80,7 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Withdraw([Bind("AccountNumber,Amount")] AtmTransactionViewModel viewModel)
+        public async Task<IActionResult> Withdraw([Bind("AccountNumber, Amount")] AtmTransactionViewModel viewModel)
         {
             viewModel.Account = await _context.Account.Include(x => x.Transactions).
                 FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
@@ -108,8 +108,79 @@ namespace Assignment2.Controllers
             viewModel.Account.Transactions.Add(
                 new Transaction
                 {
+                    AccountNumber = viewModel.AccountNumber,
                     TransactionType = TransactionType.Withdraw,
                     Amount = viewModel.Amount,
+                    ModifyDate = DateTime.UtcNow
+                });
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Transfer(int accountNumber, int destinationAccountNumber, string comment)
+        {
+            return View(
+                new TransferModel
+                {
+                    AccountNumber = accountNumber,
+                    DestinationAccountNumber = destinationAccountNumber,
+                    Account = await _context.Account.FindAsync(accountNumber),
+                    DestinationAccount = await _context.Account.FindAsync(destinationAccountNumber),
+                    Comment = comment
+                });
+            //[Bind("AccountNumber, DestinationAccountNumber, Amount")]
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] TransferModel viewModel)
+        {
+            viewModel.Account = await _context.Account.Include(x => x.Transactions).
+                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
+
+            viewModel.DestinationAccount = await _context.Account.Include(x => x.Transactions).
+                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.DestinationAccountNumber);
+
+            // Check that the withdraw amount is a positive integer.
+            if (viewModel.Amount <= 0)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
+                return View(viewModel);
+            }
+            // Check that the user has enough money to withdraw the desired amount.
+            if (viewModel.Amount > viewModel.Account.Balance)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
+                return View(viewModel);
+            }
+            // Check whether the withdraw amount has more than 2 decimal places.
+            //if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
+            //{
+            //    ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+            //    return View(viewModel);
+            //}
+
+            viewModel.Account.Balance -= viewModel.Amount;
+            viewModel.Account.Transactions.Add(
+                new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    DestAccount = viewModel.DestinationAccountNumber,
+                    TransactionType = TransactionType.Transfer,
+                    Amount = viewModel.Amount,
+                    Comment = viewModel.Comment,
+                    ModifyDate = DateTime.UtcNow
+                });
+
+            viewModel.DestinationAccount.Balance += viewModel.Amount;
+            viewModel.DestinationAccount.Transactions.Add(
+                new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    TransactionType = TransactionType.Deposit,
+                    Amount = viewModel.Amount,
+                    Comment = viewModel.Comment,
                     ModifyDate = DateTime.UtcNow
                 });
 
