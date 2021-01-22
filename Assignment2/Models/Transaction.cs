@@ -23,10 +23,14 @@ namespace Assignment2.Models
         public int TransactionId { get; set; }
 
         [Required] 
+        [Display(Name = "Type")]
         public TransactionType TransactionType { get; set; }
 
         [Required]
+        [Display(Name = "Source account")]
         public int AccountNumber { get; set; }
+
+        [Display(Name = "Destination account")]
         public int DestAccount { get; set; }
 
         [DataType(DataType.Currency)]
@@ -37,6 +41,7 @@ namespace Assignment2.Models
         public string Comment { get; set; }
 
         [Required, DataType(DataType.Date)]
+        [Display(Name = "Last Modified")]
         public DateTime ModifyDate { get; set; }
 
         [ForeignKey("AccountForeignKey")]
