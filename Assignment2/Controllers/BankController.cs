@@ -63,7 +63,8 @@ namespace Assignment2.Controllers
                 {
                     TransactionType = TransactionType.Deposit,
                     Amount = viewModel.Amount,
-                    ModifyDate = DateTime.UtcNow
+                    ModifyDate = DateTime.UtcNow,
+                    AccountNumber = viewModel.AccountNumber
                 });
 
             await _context.SaveChangesAsync();
@@ -184,18 +185,28 @@ namespace Assignment2.Controllers
                     Amount = viewModel.Amount,
                     Comment = viewModel.Comment,
                     ModifyDate = DateTime.UtcNow
-                });
+                }); ;
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Transactions(int? page = 1)
+        public async Task<IActionResult> Transactions(int? accountNumber, int? page = 1)
         {
-            var pagedList = await _context.Transaction.ToPagedListAsync(page, 4);
 
-            return View(pagedList);
+            var transactionHistoryModel = new TransactionHistoryModel
+            {
+                Accounts = await _context.Account.ToListAsync()
+            };
+
+            if(accountNumber != null)
+            {
+                transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber).ToPagedListAsync(page, 4);
+                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
+            }
+
+            return View(transactionHistoryModel);
         }
     }
 }
