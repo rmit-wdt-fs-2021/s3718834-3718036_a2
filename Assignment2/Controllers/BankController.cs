@@ -9,9 +9,11 @@ using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
 
 namespace Assignment2.Controllers
 {
+    [Authorize]
     public class BankController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -61,7 +63,8 @@ namespace Assignment2.Controllers
                 {
                     TransactionType = TransactionType.Deposit,
                     Amount = viewModel.Amount,
-                    ModifyDate = DateTime.UtcNow
+                    ModifyDate = DateTime.UtcNow,
+                    AccountNumber = viewModel.AccountNumber
                 });
 
             await _context.SaveChangesAsync();
@@ -182,11 +185,40 @@ namespace Assignment2.Controllers
                     Amount = viewModel.Amount,
                     Comment = viewModel.Comment,
                     ModifyDate = DateTime.UtcNow
-                });
+                }); ;
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Transactions(int? accountNumber, int? page = 1)
+        {
+
+            var transactionHistoryModel = new TransactionHistoryModel
+            {
+                Accounts = await _context.Account.ToListAsync()
+            };
+
+            if (transactionHistoryModel.Accounts.Count == 0)
+            {
+                return RedirectToAction(nameof(HomeController.Error));
+            }
+
+            if (transactionHistoryModel.Accounts.Count == 1)
+            {
+                accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+            }
+
+            if(accountNumber != null)
+            {
+                transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber)
+                    .OrderByDescending(transaction => transaction.ModifyDate)
+                    .ToPagedListAsync(page, 4);
+                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
+            }
+
+            return View(transactionHistoryModel);
         }
     }
 }
