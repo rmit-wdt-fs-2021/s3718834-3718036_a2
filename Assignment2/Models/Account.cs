@@ -29,7 +29,7 @@ namespace Assignment2.Models
         [Required]
         public int CustomerId { get; set; }
 
-        [Required, DataType(DataType.Date)]
+        [Required, DataType(DataType.DateTime)]
         public DateTime ModifyDate { get; set; }
 
         [ForeignKey("CustomerForeignKey")]

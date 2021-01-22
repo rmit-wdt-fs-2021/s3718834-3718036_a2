@@ -40,7 +40,7 @@ namespace Assignment2.Models
         [StringLength(255)]
         public string Comment { get; set; }
 
-        [Required, DataType(DataType.Date)]
+        [Required, DataType(DataType.DateTime)]
         [Display(Name = "Last Modified")]
         public DateTime ModifyDate { get; set; }
 

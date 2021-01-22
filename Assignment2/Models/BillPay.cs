@@ -30,13 +30,13 @@ namespace Assignment2.Models
         [DataType(DataType.Currency)]
         public decimal Amount { get; set; }
 
-        [Required, DataType(DataType.Date)]
+        [Required, DataType(DataType.DateTime)]
         public DateTime ScheduleDate { get; set; }
 
         [Required] 
         public Period Period { get; set; }
 
-        [Required, DataType(DataType.Date)]
+        [Required, DataType(DataType.DateTime)]
         public DateTime ModifyDate { get; set; }
 
         [ForeignKey("AccountForeignKey")]
