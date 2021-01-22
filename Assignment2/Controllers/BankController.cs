@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Assignment2.Controllers
 {
+    [Authorize]
     public class BankController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -187,6 +188,11 @@ namespace Assignment2.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Trasnactions()
+        {
+            return View(await _context.Transaction.ToListAsync());
         }
     }
 }
