@@ -9,6 +9,7 @@ using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
 
 namespace Assignment2.Controllers
 {
@@ -190,9 +191,11 @@ namespace Assignment2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Trasnactions()
+        public async Task<IActionResult> Transactions(int? page = 1)
         {
-            return View(await _context.Transaction.ToListAsync());
+            var pagedList = await _context.Transaction.ToPagedListAsync(page, 4);
+
+            return View(pagedList);
         }
     }
 }
