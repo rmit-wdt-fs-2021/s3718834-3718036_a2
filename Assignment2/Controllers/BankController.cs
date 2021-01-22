@@ -202,7 +202,9 @@ namespace Assignment2.Controllers
 
             if(accountNumber != null)
             {
-                transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber).ToPagedListAsync(page, 4);
+                transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber)
+                    .OrderByDescending(transaction => transaction.ModifyDate)
+                    .ToPagedListAsync(page, 4);
                 transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
             }
 
