@@ -10,7 +10,7 @@ namespace Assignment2.ViewModels
 {
     public class TransactionHistoryModel
     {
-        public IEnumerable<Account> Accounts { get; set; }
+        public List<Account> Accounts { get; set; }
 
         public int SelectedAccountNumber { get; set; }
 

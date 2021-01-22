@@ -200,6 +200,16 @@ namespace Assignment2.Controllers
                 Accounts = await _context.Account.ToListAsync()
             };
 
+            if (transactionHistoryModel.Accounts.Count == 0)
+            {
+                return RedirectToAction(nameof(HomeController.Error));
+            }
+
+            if (transactionHistoryModel.Accounts.Count == 1)
+            {
+                accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+            }
+
             if(accountNumber != null)
             {
                 transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber)
