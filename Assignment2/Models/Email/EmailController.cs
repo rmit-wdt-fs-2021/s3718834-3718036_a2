@@ -31,24 +31,18 @@ namespace Assignment2.Models
 
         public async Task<IActionResult> Index()
         {
-            var accounts = await _context.Account.Include(x => x.Transactions).ToListAsync();
-
-            List<ActivityReportModel> activityReportModels = new List<ActivityReportModel>();
-            foreach(var account in accounts)
+            Dictionary<string, List<ActivityReportModel>> activityReportModels =  await GetActivityReportsSince(DateTime.MinValue);
+            foreach(var entry in activityReportModels)
             {
-                activityReportModels.Add(new ActivityReportModel
-                {
-                    Account = account,
-                    BalanceChange = new decimal(1.01),
-                    Transactions = account.Transactions
-                });
+                // await _emailSender.SendActivityReportAsync(entry.Key, await GenerateActivityReportHtml(entry.Value));
+                return View("ActivityReport", entry.Value);
             }
-            await GetActivityReportsSince(DateTime.MinValue);
-            //await _emailSender.SendActivityReportAsync("brodeyyendall@gmail.com", await GenerateActivityReportHtml(activityReportModels));
-            return View("ActivityReport", activityReportModels);
+
+
+            return View("ActivityReport", new List<ActivityReportModel>());
         }
 
-        public async Task<List<ActivityReportModel>> GetActivityReportsSince(DateTime dateMinimum)
+        private async Task<Dictionary<string, List<ActivityReportModel>>> GetActivityReportsSince(DateTime dateMinimum)
         {
             // TODO Find how to make this async
             var newTransactions = _context.Transaction.Where(transaction => transaction.ModifyDate > dateMinimum)
@@ -56,25 +50,27 @@ namespace Assignment2.Models
                 .GroupBy(transaction => transaction.AccountNumber);
 
 
-            // Start all the requests to the database for accessing the account the transasctions belong to.
-            // Done like this so one request doesn't hold up the others and parallelisation reduces work time
-            var activityReportCreationTasks = new List<Task<ActivityReportModel>>();
-            foreach(var transactionGroup in newTransactions)
-            {
-                activityReportCreationTasks.Add(ConvertToActivityReportModel(transactionGroup));
-            }
-
-            // As the accounts come back from the database, add the constructed activity reports to the list
             var activityReportModels = new List<ActivityReportModel>();
-            while(activityReportCreationTasks.Count > 0)
+            foreach (var transactionGroup in newTransactions)
             {
-                var finishedTask = await Task.WhenAny(activityReportCreationTasks); // Get a finished task
-                activityReportCreationTasks.Remove(finishedTask); // Remove from the list because it is done
-                activityReportModels.Add(await finishedTask); // Add the result to the list
+                activityReportModels.Add(await ConvertToActivityReportModel(transactionGroup));
             }
 
 
-            return activityReportModels;
+            var groupedAccounts = activityReportModels.AsEnumerable().GroupBy(activityReport => activityReport.Account.CustomerId);
+            var emailActivityReportTable = new Dictionary<string, List<ActivityReportModel>>();
+            foreach (var group in groupedAccounts)
+            {
+                var customer = await _context.Customer
+                    .Include(customer => customer.Login)
+                    .Where(customer => customer.CustomerId == group.Key)
+                    .FirstAsync();
+
+                emailActivityReportTable.Add(customer.Login.Email, group.ToList());
+            }
+
+           
+            return emailActivityReportTable;
         }
 
         private async Task<ActivityReportModel> ConvertToActivityReportModel(IGrouping<int, Transaction> groupedTransaction)
@@ -87,9 +83,11 @@ namespace Assignment2.Models
                 balanceChange += transaction.Amount;
             }
 
+            var account = await accountTask;
+
             return new ActivityReportModel 
             { 
-                Account = await accountTask, 
+                Account = account, 
                 Transactions = groupedTransaction.ToList(),
                 BalanceChange = balanceChange
             };
