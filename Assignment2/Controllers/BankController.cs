@@ -180,7 +180,7 @@ namespace Assignment2.Controllers
             viewModel.DestinationAccount.Transactions.Add(
                 new Transaction
                 {
-                    AccountNumber = viewModel.AccountNumber,
+                    AccountNumber = viewModel.DestinationAccountNumber,
                     TransactionType = TransactionType.Deposit,
                     Amount = viewModel.Amount,
                     Comment = viewModel.Comment,
