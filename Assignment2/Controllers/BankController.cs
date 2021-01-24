@@ -181,6 +181,7 @@ namespace Assignment2.Controllers
                 new Transaction
                 {
                     AccountNumber = viewModel.DestinationAccountNumber,
+                    DestAccount = viewModel.AccountNumber,
                     TransactionType = TransactionType.Deposit,
                     Amount = viewModel.Amount,
                     Comment = viewModel.Comment,
