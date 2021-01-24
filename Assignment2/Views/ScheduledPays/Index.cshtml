@@ -1,5 +1,77 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Common
+
+@model Assignment2.ViewModels.ScheduledPaysViewModel
+
 @{
+    ViewData["Title"] = "Scheduled Bill Payments";
+}
+
+@if (Model.Accounts.Count == 2)
+{
+    <h1>Please select an account</h1>
+
+    @foreach (var account in Model.Accounts)
+    {
+        <a class="btn btn-primary"
+           asp-action="Index" asp-route-accountNumber="@account.AccountNumber">@($"{account.AccountNumber} ({account.AccountType})")</a>
+    }
+}
+
+
+@if (Model.BillPay != null)
+{
+    <h1>Scheduled Payments for @(Model.SelectedAccountNumber)</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BillPay[0].Payee)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BillPay[0].Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BillPay[0].ScheduleDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BillPay[0].Period)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.BillPay)
+            {
+                <tr>
+                    <td>
+                        <a class="btn btn-primary"
+                           asp-action="Deposit" asp-route-accountNumber="@Html.DisplayFor(modelItem => item.AccountNumber)">Modify</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PayeeId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ScheduleDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Period)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.PagedListPager(Model.BillPay, page => Url.Action("Pay Bills", new { accountNumber = Model.SelectedAccountNumber, page = page }),
+       new PagedListRenderOptions
+            {
+           LiElementClasses = new[] { "page-item" },
+           PageClasses = new[] { "page-link" }
+       })
 }
