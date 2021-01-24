@@ -38,7 +38,7 @@ namespace Assignment2
                 .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
             services.AddControllersWithViews();
 
-            services.AddTransient<IEmailSender, EmailService>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<EmailSenderSecrets>(Configuration);
         }
 
