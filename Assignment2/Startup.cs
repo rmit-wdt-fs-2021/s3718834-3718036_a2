@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Assignment2.BackgroundServices;
+using Microsoft.AspNetCore.Mvc;
+using Assignment2.Models.Email;
 
 namespace Assignment2
 {
@@ -40,6 +43,11 @@ namespace Assignment2
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<EmailSenderSecrets>(Configuration);
+
+            services.AddScoped<IActivityReportProvider, ActivityReportController>();
+
+
+            services.AddHostedService<ActivityReportBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using Assignment2.Data;
+using Assignment2.Models.Email;
 using Assignment2.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,32 +15,29 @@ using System.Threading.Tasks;
 
 namespace Assignment2.Models
 {
-    public class EmailController : Controller
+    public class ActivityReportController : Controller, IActivityReportProvider
     {
 
         private readonly ApplicationDbContext _context;
         private readonly EmailSender _emailSender;
         private readonly ICompositeViewEngine _viewEngine;
 
-        public EmailController(ApplicationDbContext context, IOptions<EmailSenderSecrets> emailOptions, ICompositeViewEngine compositeViewEngine)
+        public ActivityReportController(ApplicationDbContext context, IOptions<EmailSenderSecrets> emailOptions, ICompositeViewEngine compositeViewEngine)
         {
             _context = context;
             _emailSender = new EmailSender(emailOptions);
             _viewEngine = compositeViewEngine;
         }
 
-
-        public async Task<IActionResult> Index()
+        public async Task<int> PerformActivityReports()
         {
-            Dictionary<string, List<ActivityReportModel>> activityReportModels =  await GetActivityReportsSince(DateTime.MinValue);
-            foreach(var entry in activityReportModels)
+            Dictionary<string, List<ActivityReportModel>> activityReportModels = await GetActivityReportsSince(DateTime.UtcNow);
+            foreach (var entry in activityReportModels)
             {
-                // await _emailSender.SendActivityReportAsync(entry.Key, await GenerateActivityReportHtml(entry.Value));
-                return View("ActivityReport", entry.Value);
+                await _emailSender.SendActivityReportAsync(entry.Key, await GenerateActivityReportHtml(entry.Value));
             }
 
-
-            return View("ActivityReport", new List<ActivityReportModel>());
+            return activityReportModels.Count;
         }
 
         private async Task<Dictionary<string, List<ActivityReportModel>>> GetActivityReportsSince(DateTime dateMinimum)
@@ -93,7 +91,7 @@ namespace Assignment2.Models
             };
         }
 
-        public async Task<string> GenerateActivityReportHtml(List<ActivityReportModel> model)
+        private async Task<string> GenerateActivityReportHtml(List<ActivityReportModel> model)
         {
             ViewData.Model = model;
 
