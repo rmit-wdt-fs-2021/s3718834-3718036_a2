@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -38,14 +39,16 @@ namespace Assignment2.Service
         private readonly IRazorViewEngine _razorViewEngine;
         private readonly ITempDataProvider _tempDataProvider;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(IOptions<EmailSenderSecrets> optionsAccessor, IRazorViewEngine razorViewEngine,
-            ITempDataProvider tempDataProvider, IServiceProvider serviceProvider)
+            ITempDataProvider tempDataProvider, IServiceProvider serviceProvider, ILogger<EmailService> logger)
         {
             _options = optionsAccessor.Value;
             _razorViewEngine = razorViewEngine;
             _tempDataProvider = tempDataProvider;
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         public async Task SendEmailAsync(string destination, string subject, string message)
@@ -55,12 +58,25 @@ namespace Assignment2.Service
 
         public async Task SendActivityReport(string destination, List<ActivityReportModel> contents)
         {
+            _logger.LogDebug("Sending activity report");
             await SendEmail(destination, $"Your activity report for {DateTime.Now}", "Your activity report",
                 await GetEmailHtml("ActivityReport/ActivityReport", contents));
         }
 
         private async Task SendEmail(string destination, string subject, string message, string htmlMessage)
         {
+            if (_options.SendGridKey == null)
+            {
+                _logger.LogError("Found no send grid key in user secrets. No email was sent");
+                return;
+            }
+
+            if (_options.SendGridUser == null)
+            {
+                _logger.LogError("Found no send grid user in user secrets. No email was sent");
+                return;
+            }
+            
             var client = new SendGridClient(_options.SendGridKey);
             var msg = new SendGridMessage()
             {
@@ -75,7 +91,7 @@ namespace Assignment2.Service
             // See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
             msg.SetClickTracking(false, false);
 
-            await client.SendEmailAsync(msg);
+            await client.SendEmailAsync(msg); // Comment out this line to stop emails from being sent
         }
 
         /*

@@ -6,6 +6,7 @@ using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Assignment2.Service
 {
@@ -19,22 +20,26 @@ namespace Assignment2.Service
     {
         private readonly IEmailService _emailService;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ActivityReportService> _logger;
 
-        public ActivityReportService(IEmailService emailService,
-            ApplicationDbContext context)
+        public ActivityReportService(IEmailService emailService, ApplicationDbContext context, ILogger<ActivityReportService> logger)
         {
             _emailService = emailService;
             _context = context;
+            _logger = logger;
         }
 
+        
+        
         public async Task<int> PerformActivityReports(DateTime reportsSince)
         {
+            _logger.LogDebug("Generating activity reports");
             var activityReportModels = await GetActivityReportsSince(reportsSince);
             foreach (var (email, reportContents) in activityReportModels)
             {
                 await _emailService.SendActivityReport(email, reportContents);
             }
-
+            
             return activityReportModels.Count;
         }
 
