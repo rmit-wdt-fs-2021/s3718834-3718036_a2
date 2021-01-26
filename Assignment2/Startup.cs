@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Assignment2.BackgroundServices;
 using Microsoft.AspNetCore.Mvc;
-using Assignment2.Models.Email;
+using Assignment2.Service;
 
 namespace Assignment2
 {
@@ -41,13 +41,14 @@ namespace Assignment2
                 .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
             services.AddControllersWithViews();
 
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailSender, EmailService>();
             services.Configure<EmailSenderSecrets>(Configuration);
 
-            services.AddScoped<IActivityReportProvider, ActivityReportController>();
+            services.AddScoped<IActivityReportService, ActivityReportService>();
+            services.AddScoped<IEmailService, EmailService>();
 
 
-            services.AddHostedService<ActivityReportBackgroundService>();
+            services.AddHostedService<ActivityReportScheduler>(); // Comment out to disable activity reports
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

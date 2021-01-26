@@ -203,7 +203,7 @@ namespace Assignment2.Controllers
 
             if (transactionHistoryModel.Accounts.Count == 0)
             {
-                return RedirectToAction(nameof(HomeController.Error));
+                return RedirectToAction(actionName: "Error", controllerName:"Home");
             }
 
             if (transactionHistoryModel.Accounts.Count == 1)
