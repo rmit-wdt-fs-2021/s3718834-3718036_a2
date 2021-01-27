@@ -49,6 +49,6 @@ namespace Assignment2.Models
 
         public virtual List<Account> Accounts { get; set; }
 
-        public virtual ApplicationUser Login { get; set; }
+        public ApplicationUser Login { get; set; }
     }
 }

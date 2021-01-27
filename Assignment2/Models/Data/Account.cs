@@ -31,8 +31,7 @@ namespace Assignment2.Models
 
         [Required, DataType(DataType.DateTime)]
         public DateTime ModifyDate { get; set; }
-
-        [ForeignKey("CustomerForeignKey")]
+        
         public Customer Customer { get; set; }
 
         public virtual List<Transaction> Transactions { get; set; }
