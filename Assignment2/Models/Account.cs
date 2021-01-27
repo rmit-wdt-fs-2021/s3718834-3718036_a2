@@ -32,9 +32,9 @@ namespace Assignment2.Models
         
         public Customer Customer { get; set; }
 
-        public virtual List<Transaction> Transactions { get; set; }
+        public List<Transaction> Transactions { get; set; }
 
-        public virtual List<BillPay> BillPays { get; set; }
+        public List<BillPay> BillPays { get; set; }
 
         public async Task<decimal> Balance(IDataAccessProvider dataAccessProvider)
         {
