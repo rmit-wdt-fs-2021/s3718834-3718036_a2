@@ -24,8 +24,8 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("AccountType")
-                        .HasColumnType("int");
+                    b.Property<char>("AccountType")
+                        .HasColumnType("nvarchar(1)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
@@ -148,8 +148,9 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("PayeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Period")
-                        .HasColumnType("int");
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ScheduleDate")
                         .HasColumnType("datetime2");
@@ -189,9 +190,10 @@ namespace Assignment2.Data.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
-                    b.Property<int>("State")
+                    b.Property<string>("State")
+                        .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Tfn")
                         .HasMaxLength(11)
@@ -230,9 +232,10 @@ namespace Assignment2.Data.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
-                    b.Property<int>("State")
+                    b.Property<string>("State")
+                        .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("PayeeId");
 
@@ -262,8 +265,8 @@ namespace Assignment2.Data.Migrations
                     b.Property<DateTime>("ModifyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("int");
+                    b.Property<char>("TransactionType")
+                        .HasColumnType("nvarchar(1)");
 
                     b.HasKey("TransactionId");
 

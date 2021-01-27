@@ -8,10 +8,14 @@ using Assignment2.Controllers;
 
 namespace Assignment2.Models
 {
+    /// <summary>
+    /// Used to represent account types. The value of the entries are the ascii value of the character they represent.
+    /// This is because C# doesn't allow the assigning of char to an enum
+    /// </summary>
     public enum AccountType
     {
-        Checking,
-        Saving
+        Checking = 67, 
+        Saving = 83
     }
 
     public class Account
@@ -43,8 +47,13 @@ namespace Assignment2.Models
             return (decimal)_balance;
         }
 
-        public decimal UpdateBalance(decimal amount)
+        public async Task<decimal> UpdateBalance(decimal amount, IDataAccessProvider dataAccessProvider)
         {
+            if (_balance == null)
+            {
+                await Balance(dataAccessProvider);
+            }
+            
             return (decimal)(_balance += amount);
         }
     }

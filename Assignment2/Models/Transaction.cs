@@ -9,11 +9,11 @@ namespace Assignment2.Models
 {
     public enum TransactionType
     {
-        Deposit,
-        Withdraw,
-        Transfer,
-        ServiceCharge,
-        BillPay
+        Deposit = 'D',
+        Withdraw = 'W',
+        Transfer = 'T',
+        ServiceCharge = 'S',
+        BillPay = 'B'
     }
 
     public class Transaction
