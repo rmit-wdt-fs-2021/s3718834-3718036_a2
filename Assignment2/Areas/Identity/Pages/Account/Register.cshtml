@@ -10,31 +10,36 @@
     <div class="col-md-4">
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <h4>Create a new account.</h4>
-            <hr />
+            <hr/>
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="Input.LoginId"></label>
+                <input asp-for="Input.LoginId" class="form-control"/>
+                <span asp-validation-for="Input.LoginId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Email"></label>
-                <input asp-for="Input.Email" class="form-control" />
+                <input asp-for="Input.Email" class="form-control"/>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.CustomerName"></label>
-                <input asp-for="Input.CustomerName" class="form-control" />
+                <input asp-for="Input.CustomerName" class="form-control"/>
                 <span asp-validation-for="Input.CustomerName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Tfn"></label>
-                <input asp-for="Input.Tfn" class="form-control" />
+                <input asp-for="Input.Tfn" class="form-control"/>
                 <span asp-validation-for="Input.Tfn" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Address"></label>
-                <input asp-for="Input.Address" class="form-control" />
+                <input asp-for="Input.Address" class="form-control"/>
                 <span asp-validation-for="Input.Address" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.City"></label>
-                <input asp-for="Input.City" class="form-control" />
+                <input asp-for="Input.City" class="form-control"/>
                 <span asp-validation-for="Input.City" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,22 +49,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="Input.PostCode"></label>
-                <input asp-for="Input.PostCode" class="form-control" />
+                <input asp-for="Input.PostCode" class="form-control"/>
                 <span asp-validation-for="Input.PostCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Phone"></label>
-                <input asp-for="Input.Phone" class="form-control" />
+                <input asp-for="Input.Phone" class="form-control"/>
                 <span asp-validation-for="Input.Phone" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Password"></label>
-                <input asp-for="Input.Password" class="form-control" />
+                <input asp-for="Input.Password" class="form-control"/>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.ConfirmPassword"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" />
+                <input asp-for="Input.ConfirmPassword" class="form-control"/>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
@@ -68,7 +73,7 @@
     <div class="col-md-6 col-md-offset-2">
         <section>
             <h4>Use another service to register.</h4>
-            <hr />
+            <hr/>
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
                 {
@@ -98,5 +103,5 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }

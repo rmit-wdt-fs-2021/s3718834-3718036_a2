@@ -51,6 +51,11 @@ namespace Assignment2.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "Login ID")]
+            [Range(1000, 9999)] // Is 4 digits
+            public int LoginId { get; set; }
+            
+            [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -102,7 +107,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                Random rnd = new Random();
+                var rnd = new Random();
                 var customer = new Customer
                 {
                     CustomerId = rnd.Next(1000, 9999),
@@ -114,9 +119,14 @@ namespace Assignment2.Areas.Identity.Pages.Account
                     PostCode = Input.PostCode,
                     Phone = Input.Phone
                 };
-                _context.Customer.Add(customer);
+                await _context.Customer.AddAsync(customer);
 
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Customer = customer};
+                var user = new ApplicationUser
+                {
+                    UserName = Input.LoginId.ToString(), 
+                    Email = Input.Email, 
+                    Customer = customer
+                };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
