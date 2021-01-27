@@ -180,7 +180,8 @@ namespace Assignment2.Controllers
             viewModel.DestinationAccount.Transactions.Add(
                 new Transaction
                 {
-                    AccountNumber = viewModel.AccountNumber,
+                    AccountNumber = viewModel.DestinationAccountNumber,
+                    DestAccount = viewModel.AccountNumber,
                     TransactionType = TransactionType.Deposit,
                     Amount = viewModel.Amount,
                     Comment = viewModel.Comment,
@@ -202,7 +203,7 @@ namespace Assignment2.Controllers
 
             if (transactionHistoryModel.Accounts.Count == 0)
             {
-                return RedirectToAction(nameof(HomeController.Error));
+                return RedirectToAction(actionName: "Error", controllerName:"Home");
             }
 
             if (transactionHistoryModel.Accounts.Count == 1)

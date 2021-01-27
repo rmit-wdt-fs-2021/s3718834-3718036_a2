@@ -24,5 +24,6 @@ namespace Assignment2.Data
         public DbSet<Assignment2.Models.BillPay> BillPay { get; set; }
         public DbSet<Assignment2.Models.Payee> Payee { get; set; }
         public DbSet<Assignment2.Models.Transaction> Transaction { get; set; }
+        public DbSet<Assignment2.Models.ActivityReportHistory> ActivityReportHistory { get; set; }
     }
 }
