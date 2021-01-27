@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Assignment2.BackgroundServices;
+using Assignment2.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Assignment2.Service;
 
@@ -46,6 +47,7 @@ namespace Assignment2
 
             services.AddScoped<IActivityReportService, ActivityReportService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDataAccessProvider, DataAccessController>();
 
 
             services.AddHostedService<ActivityReportScheduler>(); // Comment out to disable activity reports

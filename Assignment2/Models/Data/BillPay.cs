@@ -38,11 +38,9 @@ namespace Assignment2.Models
 
         [Required, DataType(DataType.DateTime)]
         public DateTime ModifyDate { get; set; }
-
-        [ForeignKey("AccountForeignKey")]
+        
         public Account Account { get; set; }
-
-        [ForeignKey("PayeeForeignKey")]
+        
         public Payee Payee { get; set; }
 
     }

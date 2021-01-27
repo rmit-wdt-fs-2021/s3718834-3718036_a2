@@ -80,19 +80,7 @@ namespace Assignment2.Service
             var accountTask = _context.Account.Where(acc => acc.AccountNumber == groupedTransaction.Key)
                 .FirstAsync();
 
-            decimal balanceChange = 0;
-            foreach (var transaction in groupedTransaction)
-            {
-                if (transaction.TransactionType == TransactionType.Deposit)
-                {
-                    balanceChange += transaction.Amount;
-                }
-                else
-                {
-                    balanceChange -= transaction.Amount;
-                }
-            }
-            
+            var balanceChange = groupedTransaction.Sum(transaction => transaction.GetBalanceImpact());
             var account = await accountTask;
 
             return new ActivityReportModel
