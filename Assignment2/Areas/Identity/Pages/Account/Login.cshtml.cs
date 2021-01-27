@@ -15,6 +15,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Assignment2.Areas.Identity.Pages.Account
 {
+    /// <author>Following class was originally scaffolded through the Identity API </author>
+    /// <summary>
+    /// Handles the backend of user login 
+    /// </summary>
     [AllowAnonymous]
     public class LoginModel : PageModel
     {

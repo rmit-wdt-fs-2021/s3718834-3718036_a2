@@ -15,9 +15,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Assignment2.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment2.Areas.Identity.Pages.Account
 {
+    /// <author>Following class was originally scaffolded through the Identity API </author>
+    /// <summary>
+    /// Handles the backend of user registration 
+    /// </summary>
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
@@ -42,13 +47,16 @@ namespace Assignment2.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public RegisterInputModel RegisterInput { get; set; }
 
         public string ReturnUrl { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public class InputModel
+        /// <summary>
+        /// Class to represent and transport the input the user provides to register
+        /// </summary>
+        public class RegisterInputModel
         {
             [Required]
             [Display(Name = "Login ID")]
@@ -72,9 +80,11 @@ namespace Assignment2.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required, StringLength(50)]
+            [Display(Name = "Name")]
             public string CustomerName { get; set; }
 
             [StringLength(11)]
+            [Display(Name = "Tax File Number")]
             public string Tfn { get; set; }
 
             [StringLength(50)]
@@ -88,6 +98,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
 
             [StringLength(4)]
             [RegularExpression("[0-9]{4}")]
+            [Display(Name = "Postcode")]
             public string PostCode { get; set; }
 
             [Phone, Required]
@@ -110,24 +121,24 @@ namespace Assignment2.Areas.Identity.Pages.Account
                 var rnd = new Random();
                 var customer = new Customer
                 {
-                    CustomerId = rnd.Next(1000, 9999),
-                    CustomerName = Input.CustomerName,
-                    Tfn = Input.Tfn,
-                    Address = Input.Address,
-                    City = Input.City,
-                    State = Input.State,
-                    PostCode = Input.PostCode,
-                    Phone = Input.Phone
+                    CustomerId = await GenerateCustomerId(),
+                    CustomerName = RegisterInput.CustomerName,
+                    Tfn = RegisterInput.Tfn,
+                    Address = RegisterInput.Address,
+                    City = RegisterInput.City,
+                    State = RegisterInput.State,
+                    PostCode = RegisterInput.PostCode,
+                    Phone = RegisterInput.Phone
                 };
                 await _context.Customer.AddAsync(customer);
 
                 var user = new ApplicationUser
                 {
-                    UserName = Input.LoginId.ToString(), 
-                    Email = Input.Email, 
+                    UserName = RegisterInput.LoginId.ToString(), 
+                    Email = RegisterInput.Email, 
                     Customer = customer
                 };
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var result = await _userManager.CreateAsync(user, RegisterInput.Password);
 
                 if (result.Succeeded)
                 {
@@ -141,12 +152,12 @@ namespace Assignment2.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailSender.SendEmailAsync(RegisterInput.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new { email = RegisterInput.Email, returnUrl = returnUrl });
                     }
                     else
                     {
@@ -162,6 +173,26 @@ namespace Assignment2.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        
+        /// <summary>
+        /// Generates a unique customer id
+        /// </summary>
+        /// <returns>The unique customer id</returns>
+        private async Task<int> GenerateCustomerId()
+        {
+            
+            var rnd = new Random();
+            int customerId;
+            
+            // Keep generating a customer id until we get one that isn't used
+            do
+            {
+                customerId = rnd.Next(1000, 9999);// Generate a 4 digit number as needed for a customer id
+            } while (await _context.Customer.AnyAsync(c => c.CustomerId == customerId)); // Check that the id isn't already used
+
+            return customerId;
         }
     }
 }
