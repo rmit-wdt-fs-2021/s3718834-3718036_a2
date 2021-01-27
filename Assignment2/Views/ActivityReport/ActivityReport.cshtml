@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Assignment2.ViewModels.ActivityReportModel>
+﻿@inject IDataAccessProvider DataAccessProvider
+@using Assignment2.Controllers
+@model IEnumerable<Assignment2.ViewModels.ActivityReportModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,7 +10,7 @@
 
 @foreach (var activityReportModel in Model)
 {
-    <h2>@(activityReportModel.Account.AccountNumber) (@(activityReportModel.Account.AccountType)): $@(activityReportModel.Account.Balance) (@activityReportModel.BalanceChange.ToString("+0.#####;-0.#####"))</h2>
+    <h2>@(activityReportModel.Account.AccountNumber) (@(activityReportModel.Account.AccountType)): $@(await activityReportModel.Account.Balance(DataAccessProvider)) (@activityReportModel.BalanceChange.ToString("+0.#####;-0.#####"))</h2>
     <table class="table">
         <thead>
             <tr>

@@ -52,6 +52,13 @@ namespace Assignment2.Controllers
         /// <returns>The account retrieved with transactions populated</returns>
         /// <exception cref="RecordMissingException">There was no account with the provided account number</exception>
         public Task<Account> GetAccountWithTransactions(int accountNumber);
+
+        /// <summary>
+        /// Calculates the balance of the provided account
+        /// </summary>
+        /// <param name="account">The account to calculate a balance for</param>
+        /// <returns>The balance of the provided account</returns>
+        public Task<decimal> GetAccountBalance(Account account);
         
         /// <summary>
         /// Adds the provided transaction to the provided account
@@ -165,6 +172,18 @@ namespace Assignment2.Controllers
             var account = await GetAccount(accountNumber); // Will throw exception if no account found
             await _context.Entry(account).Collection(a => a.Transactions).LoadAsync();
             return account;
+        }
+
+        /// <summary>
+        /// Calculates the balance of the provided account
+        /// </summary>
+        /// <param name="account">The account to calculate a balance for</param>
+        /// <returns>The balance of the provided account</returns>
+        public async Task<decimal> GetAccountBalance(Account account)
+        {
+            await _context.Entry(account).Collection(a => a.Transactions).LoadAsync();
+
+            return account.Transactions.Sum(transaction => transaction.GetBalanceImpact());
         }
 
         /// <summary>

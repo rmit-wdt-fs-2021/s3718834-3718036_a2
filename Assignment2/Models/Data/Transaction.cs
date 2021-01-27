@@ -45,5 +45,17 @@ namespace Assignment2.Models
         public DateTime ModifyDate { get; set; }
         
         public Account Account { get; set; }
+
+        public decimal GetBalanceImpact()
+        {
+            if (TransactionType == TransactionType.Deposit)
+            {
+                return Amount;
+            }
+            else
+            {
+                return -Amount;
+            }
+        }
     }
 }

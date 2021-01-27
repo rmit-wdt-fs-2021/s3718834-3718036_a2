@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using X.PagedList;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment2.Controllers
 {
@@ -56,7 +51,7 @@ namespace Assignment2.Controllers
             //     return View(viewModel);
             // }
 
-            viewModel.Account.Balance += viewModel.Amount;
+            viewModel.Account.UpdateBalance(viewModel.Amount);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 TransactionType = TransactionType.Deposit,
@@ -90,7 +85,7 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
             // Check that the user has enough money to withdraw the desired amount.
-            if (viewModel.Amount > viewModel.Account.Balance)
+            if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
@@ -102,7 +97,7 @@ namespace Assignment2.Controllers
             //     return View(viewModel);
             // }
 
-            viewModel.Account.Balance -= viewModel.Amount;
+            viewModel.Account.UpdateBalance(viewModel.Amount);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 AccountNumber = viewModel.AccountNumber,
@@ -139,7 +134,7 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
             // Check that the user has enough money to withdraw the desired amount.
-            if (viewModel.Amount > viewModel.Account.Balance)
+            if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
@@ -151,7 +146,7 @@ namespace Assignment2.Controllers
             //    return View(viewModel);
             //}
 
-            viewModel.Account.Balance -= viewModel.Amount;
+            viewModel.Account.UpdateBalance(viewModel.Amount);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 AccountNumber = viewModel.AccountNumber,
