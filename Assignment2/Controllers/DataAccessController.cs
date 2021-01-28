@@ -83,6 +83,15 @@ namespace Assignment2.Controllers
         /// <returns>The customer retrieved</returns>
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
+
+        /// <summary>
+        /// Gets the bill payments for the provided account in a paged format
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get bill payments for</param>
+        /// <param name="page">The page to start at</param>
+        /// <returns>Bill payments for the provided account in a paged format</returns>
+        /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
+        public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
     }
 
     /// <summary>
@@ -265,6 +274,26 @@ namespace Assignment2.Controllers
 
             return user.Customer;
         }
+        
+        
+       /// <summary>
+       /// Gets the bill payments for the provided account in a paged format
+       /// </summary>
+       /// <param name="accountNumber">The account number of the account to get bill payments for</param>
+       /// <param name="page">The page to start at</param>
+       /// <returns>Bill payments for the provided account in a paged format</returns>
+       /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
+        public async Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page)
+        {
+            var account = await GetUserAccount(accountNumber);
+            
+            await _context.Entry(account).Collection(a => a.BillPays).LoadAsync();
+
+            return await account.BillPays
+                .OrderByDescending(billPay => billPay.ScheduleDate)
+                .ToPagedListAsync(page, 8);
+        }
+
     }
 
     /// <summary>

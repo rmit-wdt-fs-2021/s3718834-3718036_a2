@@ -37,6 +37,11 @@ namespace Assignment2.Data
                 .WithOne(transaction => transaction.Account)
                 .HasForeignKey(transaction => transaction.AccountNumber);
 
+            builder.Entity<Account>()
+                .HasMany(a => a.BillPays)
+                .WithOne(billPay => billPay.Account)
+                .HasForeignKey(billPay => billPay.AccountNumber);
+
             builder.Entity<Payee>()
                 .HasMany(payee => payee.BillPays)
                 .WithOne(billPay => billPay.Payee)

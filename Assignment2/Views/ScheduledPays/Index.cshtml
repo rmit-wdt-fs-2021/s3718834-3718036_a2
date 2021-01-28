@@ -50,7 +50,7 @@
                 <tr>
                     <td>
                         <a class="btn btn-primary"
-                           asp-action="Deposit" asp-route-accountNumber="@Html.DisplayFor(modelItem => item.AccountNumber)">Modify</a>
+                           asp-controller="Bank" asp-action="Deposit" asp-route-accountNumber="@Html.DisplayFor(modelItem => item.AccountNumber)">Modify</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PayeeId)
@@ -68,7 +68,7 @@
             }
         </tbody>
     </table>
-    @Html.PagedListPager(Model.BillPay, page => Url.Action("Pay Bills", new { accountNumber = Model.SelectedAccountNumber, page = page }),
+    @Html.PagedListPager(Model.BillPay, page => Url.Action("Index", new { accountNumber = Model.SelectedAccountNumber, page = page }),
        new PagedListRenderOptions
             {
            LiElementClasses = new[] { "page-item" },

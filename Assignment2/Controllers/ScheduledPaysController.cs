@@ -17,13 +17,15 @@ namespace Assignment2.Controllers
     public class ScheduledPaysController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDataAccessProvider _dataAccess;
 
-        public ScheduledPaysController(ApplicationDbContext context)
+        public ScheduledPaysController(ApplicationDbContext context, IDataAccessProvider dataAccess)
         {
             _context = context;
+            _dataAccess = dataAccess;
         }
 
-        public async Task<IActionResult> Index(int? accountNumber, int? page = 1)
+        public async Task<IActionResult> Index(int? accountNumber, int page = 1)
         {
             var scheduledPaysViewModel = new ScheduledPaysViewModel
             {
@@ -32,7 +34,7 @@ namespace Assignment2.Controllers
 
             if (scheduledPaysViewModel.Accounts.Count == 0)
             {
-                return RedirectToAction(nameof(HomeController.Error));
+                return RedirectToAction(actionName: "Error", controllerName:"Home");
             }
 
             if (scheduledPaysViewModel.Accounts.Count == 1)
@@ -42,10 +44,7 @@ namespace Assignment2.Controllers
 
             if (accountNumber != null)
             {
-                scheduledPaysViewModel.BillPay = await _context.BillPay.Where(billPay => billPay.AccountNumber == accountNumber)
-                    .OrderByDescending(billPay => billPay.ScheduleDate)
-                    .ToPagedListAsync(page, 8);
-                scheduledPaysViewModel.SelectedAccountNumber = (int)accountNumber;
+                scheduledPaysViewModel.BillPay = await _dataAccess.GetPagedBillPayments((int) accountNumber, page);
             }
 
             return View(scheduledPaysViewModel);
