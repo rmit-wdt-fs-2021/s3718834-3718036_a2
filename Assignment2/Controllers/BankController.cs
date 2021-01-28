@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Assignment2.Data;
 using Assignment2.Models;
 using Assignment2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using X.PagedList;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment2.Controllers
 {
     [Authorize]
     public class BankController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDataAccessProvider _dataAccess;
 
-        public BankController(ApplicationDbContext context)
+        public BankController(IDataAccessProvider dataAccess)
         {
-            _context = context;
+            _dataAccess = dataAccess;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Account.ToListAsync());
+            return View(await _dataAccess.GetAccounts());
         }
 
         public async Task<IActionResult> Deposit(int accountNumber)
@@ -34,15 +29,14 @@ namespace Assignment2.Controllers
                 new AtmTransactionViewModel
                 {
                     AccountNumber = accountNumber,
-                    Account = await _context.Account.FindAsync(accountNumber)
+                    Account = await _dataAccess.GetUserAccount(accountNumber)
                 });
         }
 
         [HttpPost]
         public async Task<IActionResult> Deposit([Bind("AccountNumber,Amount")] AtmTransactionViewModel viewModel)
         {
-            viewModel.Account = await _context.Account.Include(x => x.Transactions).
-                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
+            viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
 
             // Check that the deposit amount is a positive integer.
             if(viewModel.Amount <= 0)
@@ -50,24 +44,21 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
-            // Check whether the deposit amount has more than 2 decimal places.
-            //if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            //{
-            //    ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //    return View(viewModel);
-            //}
+            // // Check whether the deposit amount has more than 2 decimal places.
+            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
+            // {
+            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+            //     return View(viewModel);
+            // }
 
-            viewModel.Account.Balance += viewModel.Amount;
-            viewModel.Account.Transactions.Add(
-                new Transaction
-                {
-                    TransactionType = TransactionType.Deposit,
-                    Amount = viewModel.Amount,
-                    ModifyDate = DateTime.UtcNow,
-                    AccountNumber = viewModel.AccountNumber
-                });
-
-            await _context.SaveChangesAsync();
+            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+            {
+                TransactionType = TransactionType.Deposit,
+                Amount = viewModel.Amount,
+                ModifyDate = DateTime.UtcNow,
+                AccountNumber = viewModel.AccountNumber
+            });
 
             return RedirectToAction(nameof(Index));
         }
@@ -78,15 +69,14 @@ namespace Assignment2.Controllers
                 new AtmTransactionViewModel
                 {
                     AccountNumber = accountNumber,
-                    Account = await _context.Account.FindAsync(accountNumber)
+                    Account = await _dataAccess.GetUserAccount(accountNumber)
                 });
         }
 
         [HttpPost]
         public async Task<IActionResult> Withdraw([Bind("AccountNumber, Amount")] AtmTransactionViewModel viewModel)
         {
-            viewModel.Account = await _context.Account.Include(x => x.Transactions).
-                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
+            viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -95,42 +85,37 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
             // Check that the user has enough money to withdraw the desired amount.
-            if (viewModel.Amount > viewModel.Account.Balance)
+            if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
             }
-            // Check whether the withdraw amount has more than 2 decimal places.
-            //if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            //{
-            //    ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //    return View(viewModel);
-            //}
+            //  //Check whether the withdraw amount has more than 2 decimal places.
+            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
+            // {
+            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+            //     return View(viewModel);
+            // }
 
-            viewModel.Account.Balance -= viewModel.Amount;
-            viewModel.Account.Transactions.Add(
-                new Transaction
-                {
-                    AccountNumber = viewModel.AccountNumber,
-                    TransactionType = TransactionType.Withdraw,
-                    Amount = viewModel.Amount,
-                    ModifyDate = DateTime.UtcNow
-                });
-
-            await _context.SaveChangesAsync();
+            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+            {
+                AccountNumber = viewModel.AccountNumber,
+                TransactionType = TransactionType.Withdraw,
+                Amount = viewModel.Amount,
+                ModifyDate = DateTime.UtcNow
+            });
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Transfer(int accountNumber, int destinationAccountNumber, string comment)
+        public async Task<IActionResult> Transfer(int accountNumber, string comment)
         {
             return View(
                 new TransferModel
                 {
                     AccountNumber = accountNumber,
-                    DestinationAccountNumber = destinationAccountNumber,
-                    Account = await _context.Account.FindAsync(accountNumber),
-                    DestinationAccount = await _context.Account.FindAsync(destinationAccountNumber),
+                    Account = await _dataAccess.GetUserAccount(accountNumber),
                     Comment = comment
                 });
             //[Bind("AccountNumber, DestinationAccountNumber, Amount")]
@@ -139,11 +124,8 @@ namespace Assignment2.Controllers
         [HttpPost]
         public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] TransferModel viewModel)
         {
-            viewModel.Account = await _context.Account.Include(x => x.Transactions).
-                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.AccountNumber);
-
-            viewModel.DestinationAccount = await _context.Account.Include(x => x.Transactions).
-                FirstOrDefaultAsync(x => x.AccountNumber == viewModel.DestinationAccountNumber);
+            viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
+            viewModel.DestinationAccount = await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -152,7 +134,7 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
             // Check that the user has enough money to withdraw the desired amount.
-            if (viewModel.Amount > viewModel.Account.Balance)
+            if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
@@ -164,57 +146,50 @@ namespace Assignment2.Controllers
             //    return View(viewModel);
             //}
 
-            viewModel.Account.Balance -= viewModel.Amount;
-            viewModel.Account.Transactions.Add(
-                new Transaction
-                {
-                    AccountNumber = viewModel.AccountNumber,
-                    DestAccount = viewModel.DestinationAccountNumber,
-                    TransactionType = TransactionType.Transfer,
-                    Amount = viewModel.Amount,
-                    Comment = viewModel.Comment,
-                    ModifyDate = DateTime.UtcNow
-                });
+            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+            {
+                AccountNumber = viewModel.AccountNumber,
+                DestAccount = viewModel.DestinationAccountNumber,
+                TransactionType = TransactionType.Transfer,
+                Amount = viewModel.Amount,
+                Comment = viewModel.Comment,
+                ModifyDate = DateTime.UtcNow
+            });
 
-            viewModel.DestinationAccount.Balance += viewModel.Amount;
-            viewModel.DestinationAccount.Transactions.Add(
-                new Transaction
-                {
-                    AccountNumber = viewModel.AccountNumber,
-                    TransactionType = TransactionType.Deposit,
-                    Amount = viewModel.Amount,
-                    Comment = viewModel.Comment,
-                    ModifyDate = DateTime.UtcNow
-                }); ;
-
-            await _context.SaveChangesAsync();
-
+            await _dataAccess.AddTransaction(viewModel.DestinationAccount, new Transaction
+            {
+                AccountNumber = viewModel.DestinationAccountNumber,
+                DestAccount = viewModel.AccountNumber,
+                TransactionType = TransactionType.Deposit,
+                Amount = viewModel.Amount,
+                Comment = viewModel.Comment,
+                ModifyDate = DateTime.UtcNow
+            });
+            
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Transactions(int? accountNumber, int? page = 1)
+        public async Task<IActionResult> Transactions(int? accountNumber, int page = 1)
         {
 
             var transactionHistoryModel = new TransactionHistoryModel
             {
-                Accounts = await _context.Account.ToListAsync()
+                Accounts = new List<Account>(await _dataAccess.GetAccounts())
             };
 
-            if (transactionHistoryModel.Accounts.Count == 0)
+            switch (transactionHistoryModel.Accounts.Count)
             {
-                return RedirectToAction(nameof(HomeController.Error));
-            }
-
-            if (transactionHistoryModel.Accounts.Count == 1)
-            {
-                accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+                case 0:
+                    return RedirectToAction(actionName: "Error", controllerName:"Home");
+                case 1:
+                    accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+                    break;
             }
 
             if(accountNumber != null)
             {
-                transactionHistoryModel.Transactions = await _context.Transaction.Where(transaction => transaction.AccountNumber == accountNumber)
-                    .OrderByDescending(transaction => transaction.ModifyDate)
-                    .ToPagedListAsync(page, 4);
+                transactionHistoryModel.Transactions = await _dataAccess.GetPagedTransactions((int) accountNumber, page);
                 transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
             }
 

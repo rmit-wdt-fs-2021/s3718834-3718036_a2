@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Account>
+﻿@inject IDataAccessProvider DataAccessProvider
+
+@using Assignment2.Controllers
+@model IEnumerable<Account>
 @{
     ViewData["Title"] = "Accounts";
 }
@@ -11,7 +14,7 @@
         <tr>
             <th>@Html.DisplayNameFor(x => x.AccountNumber)</th>
             <th>@Html.DisplayNameFor(x => x.AccountType)</th>
-            <th>@Html.DisplayNameFor(x => x.Balance)</th>
+            <th>Balance</th>
             <th></th>
         </tr>
         @foreach (var account in Model)
@@ -19,7 +22,7 @@
             <tr>
                 <td>@Html.DisplayFor(x => account.AccountNumber)</td>
                 <td>@Html.DisplayFor(x => account.AccountType)</td>
-                <td>@Html.DisplayFor(x => account.Balance)</td>
+                <td>@(await account.Balance(DataAccessProvider))</td>
                 <td>
                     <a class="btn btn-primary"
                        asp-action="Deposit" asp-route-accountNumber="@account.AccountNumber">Deposit</a>

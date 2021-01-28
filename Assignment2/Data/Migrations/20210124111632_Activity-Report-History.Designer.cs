@@ -4,14 +4,16 @@ using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210124111632_Activity-Report-History")]
+    partial class ActivityReportHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,6 +29,12 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("AccountType")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CustomerForeignKey")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
@@ -35,7 +43,7 @@ namespace Assignment2.Data.Migrations
 
                     b.HasKey("AccountNumber");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerForeignKey");
 
                     b.ToTable("Account");
                 });
@@ -70,7 +78,7 @@ namespace Assignment2.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerForeignKey")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -115,8 +123,9 @@ namespace Assignment2.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique();
+                    b.HasIndex("CustomerForeignKey")
+                        .IsUnique()
+                        .HasFilter("[CustomerForeignKey] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -136,6 +145,9 @@ namespace Assignment2.Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int?>("AccountForeignKey")
+                        .HasColumnType("int");
+
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
 
@@ -144,6 +156,9 @@ namespace Assignment2.Data.Migrations
 
                     b.Property<DateTime>("ModifyDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("PayeeForeignKey")
+                        .HasColumnType("int");
 
                     b.Property<int>("PayeeId")
                         .HasColumnType("int");
@@ -156,9 +171,9 @@ namespace Assignment2.Data.Migrations
 
                     b.HasKey("BillPayId");
 
-                    b.HasIndex("AccountNumber");
+                    b.HasIndex("AccountForeignKey");
 
-                    b.HasIndex("PayeeId");
+                    b.HasIndex("PayeeForeignKey");
 
                     b.ToTable("BillPay");
                 });
@@ -245,6 +260,9 @@ namespace Assignment2.Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int?>("AccountForeignKey")
+                        .HasColumnType("int");
+
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
 
@@ -266,7 +284,7 @@ namespace Assignment2.Data.Migrations
 
                     b.HasKey("TransactionId");
 
-                    b.HasIndex("AccountNumber");
+                    b.HasIndex("AccountForeignKey");
 
                     b.ToTable("Transaction");
                 });
@@ -410,9 +428,7 @@ namespace Assignment2.Data.Migrations
                 {
                     b.HasOne("Assignment2.Models.Customer", "Customer")
                         .WithMany("Accounts")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerForeignKey");
 
                     b.Navigation("Customer");
                 });
@@ -421,9 +437,7 @@ namespace Assignment2.Data.Migrations
                 {
                     b.HasOne("Assignment2.Models.Customer", "Customer")
                         .WithOne("Login")
-                        .HasForeignKey("Assignment2.Models.ApplicationUser", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Assignment2.Models.ApplicationUser", "CustomerForeignKey");
 
                     b.Navigation("Customer");
                 });
@@ -432,15 +446,11 @@ namespace Assignment2.Data.Migrations
                 {
                     b.HasOne("Assignment2.Models.Account", "Account")
                         .WithMany("BillPays")
-                        .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AccountForeignKey");
 
                     b.HasOne("Assignment2.Models.Payee", "Payee")
                         .WithMany("BillPays")
-                        .HasForeignKey("PayeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PayeeForeignKey");
 
                     b.Navigation("Account");
 
@@ -451,9 +461,7 @@ namespace Assignment2.Data.Migrations
                 {
                     b.HasOne("Assignment2.Models.Account", "Account")
                         .WithMany("Transactions")
-                        .HasForeignKey("AccountNumber")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AccountForeignKey");
 
                     b.Navigation("Account");
                 });
