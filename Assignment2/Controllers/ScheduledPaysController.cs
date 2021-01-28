@@ -44,10 +44,19 @@ namespace Assignment2.Controllers
 
             if (accountNumber != null)
             {
-                scheduledPaysViewModel.BillPay = await _dataAccess.GetPagedBillPayments((int) accountNumber, page);
+                scheduledPaysViewModel.BillPayList = await _dataAccess.GetPagedBillPayments((int) accountNumber, page);
             }
 
             return View(scheduledPaysViewModel);
+        }
+
+        public async Task<IActionResult> Modify(int billPayId)
+        {
+            return View(
+            new ScheduledPaysViewModel
+            {
+                BillPay = await _context.BillPay.FindAsync(billPayId)
+            });
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Assignment2.Controllers
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
 
             // Check that the deposit amount is a positive integer.
-            if(viewModel.Amount <= 0)
+            if (viewModel.Amount <= 0)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
@@ -84,6 +84,7 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
+
             // Check that the user has enough money to withdraw the desired amount.
             if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
@@ -122,10 +123,12 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] TransferModel viewModel)
+        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")]
+            TransferModel viewModel)
         {
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
-            viewModel.DestinationAccount = await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
+            viewModel.DestinationAccount =
+                await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -133,6 +136,7 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
+
             // Check that the user has enough money to withdraw the desired amount.
             if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
@@ -166,13 +170,12 @@ namespace Assignment2.Controllers
                 Comment = viewModel.Comment,
                 ModifyDate = DateTime.UtcNow
             });
-            
+
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Transactions(int? accountNumber, int page = 1)
         {
-
             var transactionHistoryModel = new TransactionHistoryModel
             {
                 Accounts = new List<Account>(await _dataAccess.GetAccounts())
@@ -181,16 +184,17 @@ namespace Assignment2.Controllers
             switch (transactionHistoryModel.Accounts.Count)
             {
                 case 0:
-                    return RedirectToAction(actionName: "Error", controllerName:"Home");
+                    return RedirectToAction(actionName: "Error", controllerName: "Home");
                 case 1:
                     accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
                     break;
             }
 
-            if(accountNumber != null)
+            if (accountNumber != null)
             {
-                transactionHistoryModel.Transactions = await _dataAccess.GetPagedTransactions((int) accountNumber, page);
-                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
+                transactionHistoryModel.Transactions =
+                    await _dataAccess.GetPagedTransactions((int) accountNumber, page);
+                transactionHistoryModel.SelectedAccountNumber = (int) accountNumber;
             }
 
             return View(transactionHistoryModel);

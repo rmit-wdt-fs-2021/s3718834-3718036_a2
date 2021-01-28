@@ -19,10 +19,10 @@
     }
 }
 
-
-@if (Model.BillPay != null)
+@if (Model.BillPayList != null)
 {
     <h1>Scheduled Payments for @(Model.SelectedAccountNumber)</h1>
+    <a class="btn btn-primary" asp-action="Modify">New Payment</a>
     <table class="table">
         <thead>
             <tr>
@@ -30,27 +30,27 @@
 
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.BillPay[0].Payee)
+                    @Html.DisplayNameFor(model => model.BillPayList[0].Payee)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.BillPay[0].Amount)
+                    @Html.DisplayNameFor(model => model.BillPayList[0].Amount)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.BillPay[0].ScheduleDate)
+                    @Html.DisplayNameFor(model => model.BillPayList[0].ScheduleDate)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.BillPay[0].Period)
+                    @Html.DisplayNameFor(model => model.BillPayList[0].Period)
                 </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.BillPay)
+            @foreach (var item in Model.BillPayList)
             {
                 <tr>
                     <td>
                         <a class="btn btn-primary"
-                           asp-controller="Bank" asp-action="Deposit" asp-route-accountNumber="@Html.DisplayFor(modelItem => item.AccountNumber)">Modify</a>
+                           asp-action="Modify" asp-route-billPayId="@Html.DisplayFor(modelItem => item.BillPayId)">Modify</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PayeeId)
@@ -68,7 +68,7 @@
             }
         </tbody>
     </table>
-    @Html.PagedListPager(Model.BillPay, page => Url.Action("Index", new { accountNumber = Model.SelectedAccountNumber, page = page }),
+    @Html.PagedListPager(Model.BillPayList, page => Url.Action("Index", new { accountNumber = Model.SelectedAccountNumber, page = page }),
        new PagedListRenderOptions
             {
            LiElementClasses = new[] { "page-item" },
