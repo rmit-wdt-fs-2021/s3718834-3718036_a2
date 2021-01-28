@@ -19,10 +19,10 @@
     }
 }
 
-
 @if (Model.BillPayList != null)
 {
     <h1>Scheduled Payments for @(Model.SelectedAccountNumber)</h1>
+    <a class="btn btn-primary" asp-action="Modify">New Payment</a>
     <table class="table">
         <thead>
             <tr>
