@@ -42,13 +42,22 @@ namespace Assignment2.Controllers
 
             if (accountNumber != null)
             {
-                scheduledPaysViewModel.BillPay = await _context.BillPay.Where(billPay => billPay.AccountNumber == accountNumber)
+                 scheduledPaysViewModel.BillPayList = await _context.BillPay.Where(billPay => billPay.AccountNumber == accountNumber)
                     .OrderByDescending(billPay => billPay.ScheduleDate)
                     .ToPagedListAsync(page, 8);
                 scheduledPaysViewModel.SelectedAccountNumber = (int)accountNumber;
             }
 
             return View(scheduledPaysViewModel);
+        }
+
+        public async Task<IActionResult> Modify(int billPayId)
+        {
+            return View(
+            new ScheduledPaysViewModel
+            {
+                BillPay = await _context.BillPay.FindAsync(billPayId)
+            });
         }
     }
 }

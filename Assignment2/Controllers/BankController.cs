@@ -1,4 +1,4 @@
-﻿using System;
+﻿  using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,8 +17,7 @@ namespace Assignment2.Controllers
     public class BankController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public BankController(ApplicationDbContext context)
+          public BankController(ApplicationDbContext context)
         {
             _context = context;
         }
