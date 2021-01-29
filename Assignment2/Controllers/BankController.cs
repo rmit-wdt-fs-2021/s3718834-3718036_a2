@@ -51,7 +51,7 @@ namespace Assignment2.Controllers
             //     return View(viewModel);
             // }
 
-            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 TransactionType = TransactionType.Deposit,
@@ -98,7 +98,7 @@ namespace Assignment2.Controllers
             //     return View(viewModel);
             // }
 
-            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 AccountNumber = viewModel.AccountNumber,
@@ -150,7 +150,7 @@ namespace Assignment2.Controllers
             //    return View(viewModel);
             //}
 
-            viewModel.Account.UpdateBalance(viewModel.Amount);
+            await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
                 AccountNumber = viewModel.AccountNumber,

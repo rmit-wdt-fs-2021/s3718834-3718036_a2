@@ -57,10 +57,6 @@ namespace Assignment2.Controllers
             //{
             //    BillPay = await _context.BillPay.FindAsync(billPayId)
             //});
-            if (billPayId == null)
-            {
-                return NotFound();
-            }
 
             var billPay = await _context.BillPay.FindAsync(billPayId);
             if (billPay == null)
@@ -77,6 +73,23 @@ namespace Assignment2.Controllers
             {
                 BillPay = await _context.BillPay.FindAsync(billPayId)
             });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ScheduledPaysViewModel viewModel)
+        {
+            viewModel.SelectedAccount = await _dataAccess.GetUserAccount(viewModel.SelectedAccountNumber);
+
+            await _dataAccess.AddScheduledPayment(viewModel.SelectedAccount, new BillPay
+            {
+                AccountNumber = viewModel.SelectedAccount.AccountNumber,
+                PayeeId = viewModel.BillPay.PayeeId,
+                Amount = viewModel.BillPay.Amount,
+                ScheduleDate = viewModel.BillPay.ScheduleDate,
+                ModifyDate = DateTime.UtcNow
+            });
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

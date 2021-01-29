@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using Assignment2.Models;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment2.Data
 {
@@ -17,37 +19,58 @@ namespace Assignment2.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Customer>()
-                .HasMany(customer => customer.Accounts)
-                .WithOne(account => account.Customer)
-                .HasForeignKey(account => account.CustomerId);
 
-            builder.Entity<ApplicationUser>()
-                .HasOne(login => login.Customer)
-                .WithOne(customer => customer.Login)
-                .HasForeignKey<ApplicationUser>(applicationUser => applicationUser.CustomerId);
-
-            builder.Entity<Account>()
-                .HasMany(account => account.BillPays)
-                .WithOne(billPay => billPay.Account)
-                .HasForeignKey(billPay => billPay.AccountNumber);
+            builder.Entity<Customer>(entity =>
+            {
+                entity.HasMany(customer => customer.Accounts)
+                    .WithOne(account => account.Customer)
+                    .HasForeignKey(account => account.CustomerId);
+                entity.Property(customer => customer.State)
+                    .HasConversion(state => state.ToString(),
+                        dbValue => Enum.Parse<State>(dbValue));
+            });
             
-            builder.Entity<Account>()
-                .HasMany(account => account.Transactions)
-                .WithOne(transaction => transaction.Account)
-                .HasForeignKey(transaction => transaction.AccountNumber);
+            builder.Entity<Account>(entity =>
+            {
+                entity.HasMany(account => account.BillPays)
+                    .WithOne(billPay => billPay.Account)
+                    .HasForeignKey(billPay => billPay.AccountNumber);
 
-            builder.Entity<Account>()
-                .HasMany(a => a.BillPays)
-                .WithOne(billPay => billPay.Account)
-                .HasForeignKey(billPay => billPay.AccountNumber);
+                entity.HasMany(account => account.Transactions)
+                    .WithOne(transaction => transaction.Account)
+                    .HasForeignKey(transaction => transaction.AccountNumber);
 
             builder.Entity<Payee>()
                 .HasMany(payee => payee.BillPays)
                 .WithOne(billPay => billPay.Payee)
                 .HasForeignKey(billPay => billPay.PayeeId);
+            });
+            
+            builder.Entity<Payee>().Property(customer => customer.State)
+                .HasConversion(state => state.ToString(),
+                    dbValue => Enum.Parse<State>(dbValue));
+
+            builder.Entity<ApplicationUser>()
+                .HasOne(login => login.Customer)
+                .WithOne(customer => customer.Login)
+                .HasForeignKey<ApplicationUser>(applicationUser => applicationUser.CustomerId);
+            
+
+            builder.Entity<BillPay>()
+                .Property(billPay => billPay.Period)
+                .HasConversion(period => period.ToString(),
+                    dbValue => Enum.Parse<Period>(dbValue));
+
+            builder.Entity<BillPay>()
+                .Property(billPay => billPay.Status)
+                .HasConversion(status => status.ToString(),
+                    dbValue => Enum.Parse<Status>(dbValue));
 
 
+            builder.Entity<Transaction>()
+                .Property(transaction => transaction.TransactionType)
+                .HasConversion(transactionType => (char) transactionType,
+                    dbValue => (TransactionType) dbValue);
         }
 
         public DbSet<Assignment2.Models.Account> Account { get; set; }

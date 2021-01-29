@@ -66,7 +66,14 @@ namespace Assignment2.Controllers
         /// <param name="account">The account to add the transaction to</param>
         /// <param name="transaction">The transaction to add to the account</param>
         public Task AddTransaction(Account account, Transaction transaction);
-        
+
+        /// <summary>
+        /// Adds the provided billPay to the provided account
+        /// </summary>
+        /// <param name="account">The account to add the billPay to</param>
+        /// <param name="billPay">The billPay to add to the account</param>
+        public Task AddScheduledPayment(Account account, BillPay billPay);
+
         /// <summary>
         /// Generates a paged list of 4 transactions for the provided account (which the logged in user owns)
         /// </summary>
@@ -203,6 +210,17 @@ namespace Assignment2.Controllers
         public async Task AddTransaction(Account account, Transaction transaction)
         {
             account.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Adds the provided billPay to the provided account
+        /// </summary>
+        /// <param name="account">The account to add the billPay to</param>
+        /// <param name="billPay">The billPay to add to the account</param>
+        public async Task AddScheduledPayment(Account account, BillPay billPay)
+        {
+            account.BillPays.Add(billPay);
             await _context.SaveChangesAsync();
         }
 

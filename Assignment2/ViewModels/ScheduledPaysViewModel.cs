@@ -14,6 +14,8 @@ namespace Assignment2.ViewModels
 
         public int SelectedAccountNumber { get; set; }
 
+        public Account SelectedAccount { get; set; }
+
         public IPagedList<BillPay> BillPayList { get; set; }
 
         public BillPay BillPay { get; set; }

@@ -56,7 +56,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
         /// <summary>
         /// Class to represent and transport the input the user provides to register
         /// </summary>
-        public class RegisterInputModel
+        public class RegisterInputModel : Customer
         {
             [Required]
             [Display(Name = "Login ID")]
@@ -78,32 +78,6 @@ namespace Assignment2.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-
-            [Required, StringLength(50)]
-            [Display(Name = "Name")]
-            public string CustomerName { get; set; }
-
-            [StringLength(11)]
-            [Display(Name = "Tax File Number")]
-            public string Tfn { get; set; }
-
-            [StringLength(50)]
-            public string Address { get; set; }
-
-            [StringLength(40)]
-            public string City { get; set; }
-
-            [EnumDataType(typeof(State))]
-            public State State { get; set; }
-
-            [StringLength(4)]
-            [RegularExpression("[0-9]{4}")]
-            [Display(Name = "Postcode")]
-            public string PostCode { get; set; }
-
-            [Phone, Required]
-            [RegularExpression("^(\\+61) [0-9]{4} [0-9]{4}")]
-            public string Phone { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -122,7 +96,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
                 var customer = new Customer
                 {
                     CustomerId = await GenerateCustomerId(),
-                    CustomerName = RegisterInput.CustomerName,
+                    Name = RegisterInput.Name,
                     Tfn = RegisterInput.Tfn,
                     Address = RegisterInput.Address,
                     City = RegisterInput.City,
