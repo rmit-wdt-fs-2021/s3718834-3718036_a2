@@ -10,30 +10,30 @@
     <div class="col-md-4">
         <form asp-action="Modify">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="@Model.BillPay.BillPayId" />
+            <input type="hidden" asp-for="@Model.BillPay.BillPayId" value="@Model.BillPay.BillPayId"/>
             <div class="form-group">
                 <label asp-for="@Model.BillPay.AccountNumber" class="control-label"></label>
-                <input asp-for="@Model.BillPay.AccountNumber" class="form-control" />
+                <input asp-for="@Model.BillPay.AccountNumber" class="form-control" value="@Model.BillPay.AccountNumber"/>
                 <span asp-validation-for="@Model.BillPay.AccountNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="@Model.BillPay.PayeeId" class="control-label"></label>
-                <input asp-for="@Model.BillPay.PayeeId" class="form-control" />
+                <input asp-for="@Model.BillPay.PayeeId" class="form-control" value="@Model.BillPay.PayeeId"/>
                 <span asp-validation-for="@Model.BillPay.PayeeId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="@Model.BillPay.Amount" class="control-label"></label>
-                <input asp-for="@Model.BillPay.Amount" class="form-control" />
+                <input asp-for="@Model.BillPay.Amount" class="form-control" value="@Model.BillPay.Amount"/>
                 <span asp-validation-for="@Model.BillPay.Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="@Model.BillPay.ScheduleDate" class="control-label"></label>
-                <input asp-for="@Model.BillPay.ScheduleDate" class="form-control" />
+                <input asp-for="@Model.BillPay.ScheduleDate" class="form-control" value="@Model.BillPay.ScheduleDate"/>
                 <span asp-validation-for="@Model.BillPay.ScheduleDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="@Model.BillPay.Period" class="control-label"></label>
-                <select asp-for="@Model.BillPay.Period" class="form-control"></select>
+                <select asp-for="@Model.BillPay.Period" class="form-control" asp-items="Html.GetEnumSelectList<Period>()" selected="@Model.BillPay.Period"></select>
                 <span asp-validation-for="@Model.BillPay.Period" class="text-danger"></span>
             </div>
             <div class="form-group">

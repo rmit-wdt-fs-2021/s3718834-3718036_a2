@@ -19,5 +19,7 @@ namespace Assignment2.ViewModels
         public IPagedList<BillPay> BillPayList { get; set; }
 
         public BillPay BillPay { get; set; }
+
+        public int BillPayId { get; set; }
     }
 }

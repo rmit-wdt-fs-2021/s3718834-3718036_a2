@@ -56,8 +56,17 @@ namespace Assignment2.Controllers
             return View(
             new ScheduledPaysViewModel
             {
-                BillPay = await _context.BillPay.FindAsync(billPayId)
+                BillPayId = billPayId,
+                BillPay = await _dataAccess.GetBillPay(billPayId)
             });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Modify(ScheduledPaysViewModel viewModel)
+        {
+            viewModel.BillPay = await _dataAccess.GetBillPay(viewModel.BillPayId);
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Create(int selectedAccountNumber)

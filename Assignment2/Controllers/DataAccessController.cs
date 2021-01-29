@@ -99,6 +99,8 @@ namespace Assignment2.Controllers
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
 
+        public Task<BillPay> GetBillPay(int billPayId);
+
         /// <summary>
         /// Gets the bill payments for the provided account in a paged format
         /// </summary>
@@ -285,6 +287,11 @@ namespace Assignment2.Controllers
             }
 
             
+        }
+
+        public async Task<BillPay> GetBillPay(int billPayId)
+        {
+            return await _context.BillPay.FirstAsync(c => c.BillPayId == billPayId);
         }
 
         /// <summary>
