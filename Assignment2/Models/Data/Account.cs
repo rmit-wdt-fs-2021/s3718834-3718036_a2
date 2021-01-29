@@ -43,8 +43,13 @@ namespace Assignment2.Models
             return (decimal)_balance;
         }
 
-        public decimal UpdateBalance(decimal amount)
+        public async Task<decimal> UpdateBalance(decimal amount, IDataAccessProvider dataAccessProvider)
         {
+            if(_balance == null)
+            {
+                await Balance(dataAccessProvider);
+            }
+
             return (decimal)(_balance += amount);
         }
     }
