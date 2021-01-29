@@ -62,9 +62,12 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Modify(ScheduledPaysViewModel viewModel)
+        public async Task<IActionResult> Modify([Bind("BillPayId,AccountNumber,PayeeId,Amount,ScheduleDate,Period,ModifyDate")] ScheduledPaysViewModel viewModel)
         {
             viewModel.BillPay = await _dataAccess.GetBillPay(viewModel.BillPayId);
+
+            // TODO: Add stuff into here to modify existing bill payments.
+            // i.e. make a new method EditBillPay(int billPayId)??? in the DataAccessController?
 
             return RedirectToAction(nameof(Index));
         }
@@ -80,7 +83,7 @@ namespace Assignment2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ScheduledPaysViewModel viewModel)
+        public async Task<IActionResult> Create([Bind("AccountNumber,PayeeId,Amount,ScheduleDate,Period,ModifyDate")] ScheduledPaysViewModel viewModel)
         {
             viewModel.SelectedAccount = await _dataAccess.GetUserAccountWithBillPays(viewModel.SelectedAccountNumber);
 
@@ -90,6 +93,7 @@ namespace Assignment2.Controllers
                 PayeeId = viewModel.BillPay.PayeeId,
                 Amount = viewModel.BillPay.Amount,
                 ScheduleDate = viewModel.BillPay.ScheduleDate,
+                Period = viewModel.BillPay.Period,
                 ModifyDate = DateTime.UtcNow
             });
 

@@ -99,6 +99,12 @@ namespace Assignment2.Controllers
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
 
+        /// <summary>
+        /// Gets a billPay with the provided billPay id
+        /// </summary>
+        /// <param name="billPayId">The id of the billPay to retrieve.</param>
+        /// <returns>The billPay retrieved</returns>
+        /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<BillPay> GetBillPay(int billPayId);
 
         /// <summary>
@@ -289,9 +295,23 @@ namespace Assignment2.Controllers
             
         }
 
+        /// <summary>
+        /// Gets a billPay with the provided billPay id
+        /// </summary>
+        /// <param name="billPayId">The id of the billPay to retrieve.</param>
+        /// <returns>The billPay retrieved</returns>
+        /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public async Task<BillPay> GetBillPay(int billPayId)
         {
-            return await _context.BillPay.FirstAsync(c => c.BillPayId == billPayId);
+            try
+            {
+                var billPay = await _context.BillPay.FirstAsync(c => c.BillPayId == billPayId);
+                return billPay;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new RecordMissingException("Found no billPay with provided billPay id");
+            }
         }
 
         /// <summary>
