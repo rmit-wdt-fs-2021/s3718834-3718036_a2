@@ -29,7 +29,7 @@ namespace Assignment2.Controllers
         {
             var scheduledPaysViewModel = new ScheduledPaysViewModel
             {
-                Accounts = await _context.Account.ToListAsync()
+                Accounts = new List<Account>(await _dataAccess.GetAccounts())
             };
 
             if (scheduledPaysViewModel.Accounts.Count == 0)
@@ -51,6 +51,26 @@ namespace Assignment2.Controllers
         }
 
         public async Task<IActionResult> Modify(int billPayId)
+        {
+            //return View(
+            //new ScheduledPaysViewModel
+            //{
+            //    BillPay = await _context.BillPay.FindAsync(billPayId)
+            //});
+            if (billPayId == null)
+            {
+                return NotFound();
+            }
+
+            var billPay = await _context.BillPay.FindAsync(billPayId);
+            if (billPay == null)
+            {
+                return NotFound();
+            }
+            return View(billPay);
+        }
+
+        public async Task<IActionResult> Create(int billPayId)
         {
             return View(
             new ScheduledPaysViewModel

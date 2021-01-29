@@ -1,14 +1,16 @@
 ﻿@model Assignment2.ViewModels.ScheduledPaysViewModel
 
 @{
-    ViewData["Title"] = "Modify";
+    ViewData["Title"] = "Create";
 }
 
-<h1>Modify Scheduled Bill Payment</h1>
+<h1>Create New Scheduled Bill Payment</h1>
+
+<h4>BillPay</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Modify">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="@Model.BillPay.BillPayId" />
             <div class="form-group">
