@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Assignment2.Data;
 using Assignment2.Models;
+using Assignment2.Controllers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,63 +16,33 @@ namespace AdminAPI.Controllers
     public class AdminController : ControllerBase
     {
 
-        private readonly ApplicationDbContext _context; 
+        private readonly IDataAccessProvider _dataAccess; 
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(IDataAccessProvider dataAccess)
         {
-            _context = context;
+            _dataAccess = dataAccess;
         }
 
         // GET api/<AdminController>/5
         [HttpGet("Transactions/{customerId?}/{min?}/{max?}")]
-        public List<Transaction> Transactions(int? customerId = null, DateTime? min = null, DateTime? max = null)
+        public async Task<List<Transaction>> Transactions(int? customerId = null, DateTime? min = null, DateTime? max = null)
         {
             min ??= DateTime.MinValue;
             max ??= DateTime.MaxValue;
 
-            List<Transaction> transactions = new List<Transaction>();
-            if (customerId != null)
-            {
-                var accounts = _context.Account.Where(a => a.CustomerId == customerId).ToList();
-                foreach(var account in accounts) {
-                    transactions.AddRange(_context.Transaction.Where(transaction => 
-                    (
-                        transaction.AccountNumber == account.AccountNumber &&
-                         transaction.ModifyDate > min &&
-                         transaction.ModifyDate < max
-                    )).ToList());
-                }   
-            } else
-            {
-                transactions = _context.Transaction.Where(transaction => transaction.ModifyDate > min && transaction.ModifyDate < max).ToList();
-            }
-
-            foreach(var transaction in transactions)
-            {
-                transaction.Account = null;
-            }
-
-            return transactions;
+            return await _dataAccess.GetFilteredTransactions((DateTime) min, (DateTime)max, customerId);
         }
 
         [HttpGet("Customer")]
-        public List<Customer> Customers()
+        public async Task<List<Customer>> Customers()
         {
-            return _context.Customer.ToList();
+            return await _dataAccess.GetCustomers();
         }
 
         [HttpPut("Customer/{customerId}")]
         public async Task LockCustomer(int customerId)
         {
-            
-            var login = _context.Users.First(li => li.CustomerId == customerId);
-
-            if(login != null)
-            {
-                login.LockoutEnabled = true;
-                login.LockoutEnd = DateTime.Now.AddMinutes(1);
-                await _context.SaveChangesAsync();
-            }
+            await _dataAccess.LockCustomer(customerId);
         }
     }
 }

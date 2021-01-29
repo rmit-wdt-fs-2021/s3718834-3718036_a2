@@ -1,7 +1,10 @@
+using Assignment2.Controllers;
 using Assignment2.Data;
+using Assignment2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +41,13 @@ namespace AdminAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AdminAPI", Version = "v1" });
             });
+
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+               .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
+            services.AddControllersWithViews();
+
+
+            services.AddScoped<IDataAccessProvider, DataAccessController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

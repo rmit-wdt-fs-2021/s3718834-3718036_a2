@@ -83,6 +83,11 @@ namespace Assignment2.Controllers
         /// <returns>The customer retrieved</returns>
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
+
+
+        public Task<List<Customer>> GetCustomers();
+        public Task LockCustomer(int customerId);
+        public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
     }
 
     /// <summary>
@@ -264,6 +269,52 @@ namespace Assignment2.Controllers
             }
 
             return user.Customer;
+        }
+
+        public async Task<List<Customer>> GetCustomers()
+        {
+            return await _context.Customer.ToListAsync();
+        }
+
+        public async Task LockCustomer(int customerId)
+        {
+            var login = await _context.Users.FirstAsync(li => li.CustomerId == customerId);
+
+            if (login != null)
+            {
+                login.LockoutEnabled = true;
+                login.LockoutEnd = DateTime.Now.AddMinutes(1);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null)
+        {
+            IQueryable<Transaction> totalTransactions = Enumerable.Empty<Transaction>().AsQueryable();
+            if (customerId != null)
+            {
+                var accounts = await GetAccounts(customerId);
+                foreach (var account in accounts)
+                {
+                    var transactions = _context.Transaction.Where(t => t.AccountNumber == account.AccountNumber);
+                    if (totalTransactions == null)
+                    {
+                        totalTransactions = transactions;
+                    } else
+                    {
+                        Queryable.Concat(totalTransactions, transactions);
+                    }
+                  
+                }
+            }
+            else
+            {
+                totalTransactions = _context.Transaction;
+            }
+
+      
+            return await totalTransactions.Where(transaction => transaction.ModifyDate > minDate && transaction.ModifyDate < maxDate)
+                .ToListAsync();
         }
     }
 
