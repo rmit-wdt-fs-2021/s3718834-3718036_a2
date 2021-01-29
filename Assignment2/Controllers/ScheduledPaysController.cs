@@ -27,46 +27,31 @@ namespace Assignment2.Controllers
 
         public async Task<IActionResult> Index(int? accountNumber, int page = 1)
         {
-            var scheduledPaysViewModel = new ScheduledPaysViewModel
+            var transactionHistoryModel = new ScheduledPaysViewModel
             {
                 Accounts = new List<Account>(await _dataAccess.GetAccounts())
             };
 
-            if (scheduledPaysViewModel.Accounts.Count == 0)
+            switch (transactionHistoryModel.Accounts.Count)
             {
-                return RedirectToAction(actionName: "Error", controllerName:"Home");
-            }
-
-            if (scheduledPaysViewModel.Accounts.Count == 1)
-            {
-                accountNumber = scheduledPaysViewModel.Accounts[0].AccountNumber;
+                case 0:
+                    return RedirectToAction(actionName: "Error", controllerName: "Home");
+                case 1:
+                    accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+                    break;
             }
 
             if (accountNumber != null)
             {
-                scheduledPaysViewModel.BillPayList = await _dataAccess.GetPagedBillPayments((int) accountNumber, page);
+                transactionHistoryModel.BillPayList =
+                    await _dataAccess.GetPagedBillPayments((int)accountNumber, page);
+                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
             }
 
-            return View(scheduledPaysViewModel);
+            return View(transactionHistoryModel);
         }
 
         public async Task<IActionResult> Modify(int billPayId)
-        {
-            //return View(
-            //new ScheduledPaysViewModel
-            //{
-            //    BillPay = await _context.BillPay.FindAsync(billPayId)
-            //});
-
-            var billPay = await _context.BillPay.FindAsync(billPayId);
-            if (billPay == null)
-            {
-                return NotFound();
-            }
-            return View(billPay);
-        }
-
-        public async Task<IActionResult> Create(int billPayId)
         {
             return View(
             new ScheduledPaysViewModel
@@ -75,14 +60,24 @@ namespace Assignment2.Controllers
             });
         }
 
+        public async Task<IActionResult> Create(int selectedAccountNumber)
+        {
+            return View(
+                new ScheduledPaysViewModel
+                {
+                    SelectedAccountNumber = selectedAccountNumber,
+                    SelectedAccount = await _dataAccess.GetUserAccount(selectedAccountNumber)
+                });
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(ScheduledPaysViewModel viewModel)
         {
-            viewModel.SelectedAccount = await _dataAccess.GetUserAccount(viewModel.SelectedAccountNumber);
+            viewModel.SelectedAccount = await _dataAccess.GetUserAccountWithBillPays(viewModel.SelectedAccountNumber);
 
             await _dataAccess.AddScheduledPayment(viewModel.SelectedAccount, new BillPay
             {
-                AccountNumber = viewModel.SelectedAccount.AccountNumber,
+                AccountNumber = viewModel.SelectedAccountNumber,
                 PayeeId = viewModel.BillPay.PayeeId,
                 Amount = viewModel.BillPay.Amount,
                 ScheduleDate = viewModel.BillPay.ScheduleDate,

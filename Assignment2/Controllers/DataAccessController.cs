@@ -54,6 +54,14 @@ namespace Assignment2.Controllers
         public Task<Account> GetAccountWithTransactions(int accountNumber);
 
         /// <summary>
+        /// Gets a specific account for the logged in user, loading in billPays with it
+        /// </summary>
+        /// <param name="accountNumber">The id of the account to retrieve</param>
+        /// <returns>The account retrieve with billPays populated</returns>
+        /// <exception cref="RecordMissingException">User owns no account with provided id</exception>
+        public Task<Account> GetUserAccountWithBillPays(int accountNumber);
+
+        /// <summary>
         /// Calculates the balance of the provided account
         /// </summary>
         /// <param name="account">The account to calculate a balance for</param>
@@ -174,6 +182,19 @@ namespace Assignment2.Controllers
         {
             var account = await GetUserAccount(accountNumber); // Will throw exception if no account found
             await _context.Entry(account).Collection(a => a.Transactions).LoadAsync();
+            return account;
+        }
+
+        /// <summary>
+        /// Gets a specific account for the logged in user, loading in billPays with it
+        /// </summary>
+        /// <param name="accountNumber">The id of the account to retrieve</param>
+        /// <returns>The account retrieve with billPays populated</returns>
+        /// <exception cref="RecordMissingException">User owns no account with provided id</exception>
+        public async Task<Account> GetUserAccountWithBillPays(int accountNumber)
+        {
+            var account = await GetUserAccount(accountNumber);
+            await _context.Entry(account).Collection(a => a.BillPays).LoadAsync();
             return account;
         }
 
