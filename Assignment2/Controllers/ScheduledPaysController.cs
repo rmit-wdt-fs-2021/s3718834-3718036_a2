@@ -97,6 +97,22 @@ namespace Assignment2.Controllers
                 ModifyDate = DateTime.UtcNow
             });
 
+            // Check the user has enough money to pay the scheduled payment?
+            if (viewModel.BillPay.Amount > await viewModel.SelectedAccount.Balance(_dataAccess))
+            {
+                ModelState.AddModelError(nameof(viewModel.BillPay.Amount), "Amount must not exceed current balance.");
+                return View(viewModel);
+            }
+
+            await viewModel.SelectedAccount.UpdateBalance(viewModel.BillPay.Amount, _dataAccess);
+            await _dataAccess.AddTransaction(viewModel.SelectedAccount, new Transaction
+            {
+                AccountNumber = viewModel.SelectedAccountNumber,
+                TransactionType = TransactionType.BillPay,
+                Amount = viewModel.BillPay.Amount,
+                ModifyDate = DateTime.UtcNow
+            });
+
             return RedirectToAction(nameof(Index));
         }
     }
