@@ -62,14 +62,25 @@ namespace Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
+                var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
+
+                if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
+                {
+                    ModelState.AddModelError(nameof(billPay.Amount), "Amount must not exceed current balance.");
+                    return View(billPay);
+                }
+
+                if (decimal.Round(billPay.Amount, 2) != billPay.Amount)
+                {
+                    ModelState.AddModelError(nameof(billPay.Amount), "Amount cannot have more than 2 decimal places.");
+                    return View(billPay);
+                }
+
                 billPay.Status = Status.Waiting;
                 billPay.ModifyDate = DateTime.UtcNow;
                 _context.Add(billPay);
                 await _context.SaveChangesAsync();
 
-                // TODO: validate the amount with the users current balance
-
-                var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
                 await selectedAccount.UpdateBalance(billPay.Amount, _dataAccess);
                 await _dataAccess.AddTransaction(selectedAccount, new Transaction
                 {
@@ -103,6 +114,20 @@ namespace Assignment2.Controllers
             {
                 try
                 {
+                    var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
+
+                    if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
+                    {
+                        ModelState.AddModelError(nameof(billPay.Amount), "Amount must not exceed current balance.");
+                        return View(billPay);
+                    }
+
+                    if (decimal.Round(billPay.Amount, 2) != billPay.Amount)
+                    {
+                        ModelState.AddModelError(nameof(billPay.Amount), "Amount cannot have more than 2 decimal places.");
+                        return View(billPay);
+                    }
+
                     billPay.ModifyDate = DateTime.UtcNow;
                     _context.Update(billPay);
                     await _context.SaveChangesAsync();
