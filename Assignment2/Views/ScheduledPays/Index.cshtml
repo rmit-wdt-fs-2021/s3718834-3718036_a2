@@ -50,8 +50,8 @@
             {
                 <tr>
                     <td>
-                        <a class="btn btn-primary"
-                           asp-action="Modify" asp-route-billPayId="@item.BillPayId">Modify</a>
+                        <a asp-action="Modify" asp-route-billPayId="@item.BillPayId">Edit</a> |
+                        <a asp-action="Delete" asp-route-billPayId="@item.BillPayId">Delete</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PayeeId)

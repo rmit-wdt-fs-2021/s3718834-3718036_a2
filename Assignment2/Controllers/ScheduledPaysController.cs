@@ -123,5 +123,30 @@ namespace Assignment2.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> Delete(int? billPayId)
+        {
+            var billPay = await _context.BillPay.FirstOrDefaultAsync(m => m.BillPayId == billPayId);
+
+            return View(billPay);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int billPayId)
+        {
+            var billPay = await _context.BillPay.FirstOrDefaultAsync(m => m.BillPayId == billPayId);
+
+            if (billPay.Status == Status.Waiting)
+            {
+                _context.BillPay.Remove(billPay);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                ModelState.AddModelError(nameof(BillPay.Status), "Cannot delete a payment when it is 'Waiting'.");
+                return View(billPay);
+            }
+        }
     }
 }
