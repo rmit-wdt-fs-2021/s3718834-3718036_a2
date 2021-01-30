@@ -53,23 +53,40 @@ namespace Assignment2.Controllers
 
         public async Task<IActionResult> Modify(int billPayId)
         {
-            return View(
-            new ScheduledPaysViewModel
-            {
-                BillPayId = billPayId,
-                BillPay = await _dataAccess.GetBillPay(billPayId)
-            });
+            var billPay = await _context.BillPay.FirstOrDefaultAsync(m => m.BillPayId == billPayId);
+            return View(billPay);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Modify([Bind("BillPayId,AccountNumber,PayeeId,Amount,ScheduleDate,Period,ModifyDate")] ScheduledPaysViewModel viewModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Modify(int billPayId, [Bind("BillPayId,AccountNumber,PayeeId,Amount,ScheduleDate,Period,ModifyDate")] BillPay billPay)
         {
-            viewModel.BillPay = await _dataAccess.GetBillPay(viewModel.BillPayId);
+            if (billPayId != billPay.BillPayId)
+            {
+                return NotFound();
+            }
 
-            // TODO: Add stuff into here to modify existing bill payments.
-            // i.e. make a new method EditBillPay(int billPayId)??? in the DataAccessController?
-
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(billPay);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!BillPayExists(billPay.BillPayId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(billPay);
         }
 
         public async Task<IActionResult> Create(int selectedAccountNumber)
@@ -144,9 +161,14 @@ namespace Assignment2.Controllers
             }
             else
             {
-                ModelState.AddModelError(nameof(BillPay.Status), "Cannot delete a payment when it is 'Waiting'.");
+                ModelState.AddModelError(nameof(BillPay.Status), "You can only delete a payment when it is 'Waiting'.");
                 return View(billPay);
             }
+        }
+
+        private bool BillPayExists(int id)
+        {
+            return _context.BillPay.Any(e => e.BillPayId == id);
         }
     }
 }
