@@ -66,6 +66,19 @@ namespace Assignment2.Controllers
                 billPay.ModifyDate = DateTime.UtcNow;
                 _context.Add(billPay);
                 await _context.SaveChangesAsync();
+
+                // TODO: validate the amount with the users current balance
+
+                var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
+                await selectedAccount.UpdateBalance(billPay.Amount, _dataAccess);
+                await _dataAccess.AddTransaction(selectedAccount, new Transaction
+                {
+                    AccountNumber = billPay.AccountNumber,
+                    TransactionType = TransactionType.BillPay,
+                    Amount = billPay.Amount,
+                    ModifyDate = DateTime.UtcNow
+                });
+
                 return RedirectToAction(nameof(Index));
             }
             return View(billPay);
