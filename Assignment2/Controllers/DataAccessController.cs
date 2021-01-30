@@ -313,7 +313,7 @@ namespace Assignment2.Controllers
             }
 
       
-            return await totalTransactions.Where(transaction => transaction.ModifyDate > minDate && transaction.ModifyDate < maxDate)
+            return await totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date)
                 .ToListAsync();
         }
     }
