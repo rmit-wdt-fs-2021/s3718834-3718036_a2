@@ -1,42 +1,44 @@
-﻿@model Assignment2.ViewModels.ScheduledPaysViewModel
+﻿@model Assignment2.Models.BillPay
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create New Scheduled Bill Payment (@Model.SelectedAccountNumber)</h1>
+<h1>Create</h1>
 
 <h4>BillPay</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="@Model.BillPay.BillPayId" />
-            <input type="hidden" asp-for="SelectedAccountNumber" />
             <div class="form-group">
-                <label asp-for="@Model.BillPay.PayeeId" class="control-label"></label>
-                <input asp-for="@Model.BillPay.PayeeId" class="form-control" />
-                <span asp-validation-for="@Model.BillPay.PayeeId" class="text-danger"></span>
+                <label asp-for="AccountNumber" class="control-label"></label>
+                <input asp-for="AccountNumber" class="form-control" />
+                <span asp-validation-for="AccountNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="@Model.BillPay.Amount" class="control-label"></label>
-                <input asp-for="@Model.BillPay.Amount" class="form-control" />
-                <span asp-validation-for="@Model.BillPay.Amount" class="text-danger"></span>
+                <label asp-for="PayeeId" class="control-label"></label>
+                <input asp-for="PayeeId" class="form-control" />
+                <span asp-validation-for="PayeeId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="@Model.BillPay.ScheduleDate" class="control-label"></label>
-                <input asp-for="@Model.BillPay.ScheduleDate" class="form-control" />
-                <span asp-validation-for="@Model.BillPay.ScheduleDate" class="text-danger"></span>
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="@Model.BillPay.Period" class="control-label"></label>
-                <select asp-for="@Model.BillPay.Period" class="form-control" asp-items="Html.GetEnumSelectList<Period>()"></select>
-                <span asp-validation-for="@Model.BillPay.Period" class="text-danger"></span>
+                <label asp-for="ScheduleDate" class="control-label"></label>
+                <input asp-for="ScheduleDate" class="form-control" />
+                <span asp-validation-for="ScheduleDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Period" class="control-label"></label>
+                <select asp-for="Period" class="form-control" asp-items="Html.GetEnumSelectList<Period>()"></select>
+                <span asp-validation-for="Period" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
