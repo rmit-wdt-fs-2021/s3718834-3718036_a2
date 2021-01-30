@@ -24,7 +24,7 @@ namespace AdminAPI.Controllers
         }
 
         // GET api/<AdminController>/5
-        [HttpGet("Transactions/{customerId?}/{min?}/{max?}")]
+        [HttpGet("Transactions")]
         public async Task<List<Transaction>> Transactions(int? customerId = null, DateTime? min = null, DateTime? max = null)
         {
             min ??= DateTime.MinValue;
@@ -36,10 +36,15 @@ namespace AdminAPI.Controllers
         [HttpGet("Customer")]
         public async Task<List<Customer>> Customers()
         {
-            return await _dataAccess.GetCustomers();
+            var customers = await _dataAccess.GetCustomersWithLogin();
+            foreach(var customer in customers)
+            {
+                customer.Login.Customer = null;
+            }
+            return customers;
         }
 
-        [HttpPut("Customer/{customerId}")]
+        [HttpGet("Lock/{customerId}")]
         public async Task LockCustomer(int customerId)
         {
             await _dataAccess.LockCustomer(customerId);

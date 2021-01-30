@@ -28,7 +28,7 @@ namespace AdminSite
 
             services.AddHttpClient("api", client =>
             {
-                client.BaseAddress = new Uri("http://localhost:5000");
+                client.BaseAddress = new Uri("https://localhost:44361");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
         }

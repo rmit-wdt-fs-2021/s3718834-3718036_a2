@@ -85,7 +85,7 @@ namespace Assignment2.Controllers
         public Task<Customer> GetCustomer(int? customerId = null);
 
 
-        public Task<List<Customer>> GetCustomers();
+        public Task<List<Customer>> GetCustomersWithLogin();
         public Task LockCustomer(int customerId);
         public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
     }
@@ -271,9 +271,9 @@ namespace Assignment2.Controllers
             return user.Customer;
         }
 
-        public async Task<List<Customer>> GetCustomers()
+        public async Task<List<Customer>> GetCustomersWithLogin()
         {
-            return await _context.Customer.ToListAsync();
+            return await _context.Customer.Include(customer => customer.Login).ToListAsync();
         }
 
         public async Task LockCustomer(int customerId)
@@ -312,9 +312,8 @@ namespace Assignment2.Controllers
                 totalTransactions = _context.Transaction;
             }
 
-      
-            return await totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date)
-                .ToListAsync();
+
+            return totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date).ToList();
         }
     }
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using AdminSite.ViewModels;
 using Assignment2.Controllers;
 using Assignment2.Models;
@@ -33,30 +35,60 @@ namespace AdminSite.Controllers
             startDate ??= DateTime.MinValue;
             endDate ??= DateTime.MaxValue;
 
-            var response = await _client.GetAsync("api/movies/Transactions");
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            if(customerId != null)
+            {
+                query["customerId"] = customerId.ToString();
+            }
+            query["startDate"] = startDate.ToString();
+            query["endDate"] = endDate.ToString();
+            var response = await _client.GetAsync("api/Admin/Transactions?" + query.ToString());
+
+
+            var transactionViewModel = new TransactionsViewModel
+            {
+                CustomerId = customerId,
+                StartDate = startDate,
+                EndDate = endDate
+            };
 
             if(!response.IsSuccessStatusCode)
             {
-                throw new Exception(); // TODO Get a better exception
+                transactionViewModel.Transactions = new List<Transaction>();
+            } else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                transactionViewModel.Transactions = JsonConvert.DeserializeObject<List<Transaction>>(result);
             }
 
-            var result = await response.Content.ReadAsStringAsync();
 
-            var transactionViewModel = new TransactionsViewModel {
-                CustomerId = customerId,
-                StartDate = startDate,
-                EndDate = endDate,
-                Transactions = JsonConvert.DeserializeObject<List<Transaction>>(result)
-            };
-
-
-            return View(transactionViewModel);
+            return View("Transactions", transactionViewModel);
         }
 
-        public IActionResult Lock()
+        public async Task<IActionResult> Customers()
         {
-            return View();
+            var response = await _client.GetAsync("api/Admin/Customer");
+
+            List<Customer> customers;
+            if(response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                customers = JsonConvert.DeserializeObject<List<Customer>>(result);
+            } else
+            {
+                customers = new List<Customer>();
+            }
+
+            return View(customers);
         }
+
+        public async Task<IActionResult> Lock(string customerId)
+        {
+            var response = await _client.GetAsync($"/api/Admin/Lock/{customerId}");
+
+            return RedirectToAction(nameof(Customers));
+        }
+
 
         public IActionResult Block()
         {
