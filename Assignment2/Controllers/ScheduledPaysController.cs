@@ -104,6 +104,14 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
 
+            // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
+            if (decimal.Round(viewModel.BillPay.Amount, 2) != viewModel.BillPay.Amount) 
+            {
+                ModelState.AddModelError(nameof(viewModel.BillPay.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
+
             await viewModel.SelectedAccount.UpdateBalance(viewModel.BillPay.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.SelectedAccount, new Transaction
             {

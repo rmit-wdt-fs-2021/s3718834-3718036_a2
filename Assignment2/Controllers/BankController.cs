@@ -44,12 +44,13 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
-            // // Check whether the deposit amount has more than 2 decimal places.
-            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            // {
-            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //     return View(viewModel);
-            // }
+            // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
@@ -91,12 +92,14 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
             }
-            //  //Check whether the withdraw amount has more than 2 decimal places.
-            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            // {
-            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //     return View(viewModel);
-            // }
+
+            // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
@@ -119,7 +122,6 @@ namespace Assignment2.Controllers
                     Account = await _dataAccess.GetUserAccount(accountNumber),
                     Comment = comment
                 });
-            //[Bind("AccountNumber, DestinationAccountNumber, Amount")]
         }
 
         [HttpPost]
@@ -143,12 +145,13 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
             }
+
             // Check whether the withdraw amount has more than 2 decimal places.
-            //if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            //{
-            //    ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //    return View(viewModel);
-            //}
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
