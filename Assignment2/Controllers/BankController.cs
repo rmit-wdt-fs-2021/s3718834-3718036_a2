@@ -113,6 +113,12 @@ namespace Assignment2.Controllers
             // Charge the user a service fee if they have used up the free transactions.
             if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
             {
+                if ((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount - (decimal)0.1 < 200))
+                {
+                    ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
+                    return View(viewModel);
+                }
+
                 await viewModel.Account.UpdateBalance((decimal) 0.10, _dataAccess);
                 await _dataAccess.AddTransaction(viewModel.Account, new Transaction
                 {
@@ -193,6 +199,12 @@ namespace Assignment2.Controllers
             // Charge the user a service fee if they have used up the free transactions.
             if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
             {
+                if ((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount - (decimal)0.2 < 200))
+                {
+                    ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
+                    return View(viewModel);
+                }
+
                 await viewModel.Account.UpdateBalance((decimal)0.20, _dataAccess);
                 await _dataAccess.AddTransaction(viewModel.Account, new Transaction
                 {
