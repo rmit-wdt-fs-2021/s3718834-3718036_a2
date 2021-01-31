@@ -27,28 +27,28 @@ namespace Assignment2.Controllers
 
         public async Task<IActionResult> Index(int? accountNumber, int page = 1)
         {
-            var transactionHistoryModel = new ScheduledPaysViewModel
+            var scheduledPaysViewModel = new ScheduledPaysViewModel
             {
                 Accounts = new List<Account>(await _dataAccess.GetAccounts())
             };
 
-            switch (transactionHistoryModel.Accounts.Count)
+            switch (scheduledPaysViewModel.Accounts.Count)
             {
                 case 0:
-                    return RedirectToAction(actionName: "Error", controllerName: "Home");
+                    return View(scheduledPaysViewModel);
                 case 1:
-                    accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
+                    accountNumber = scheduledPaysViewModel.Accounts[0].AccountNumber;
                     break;
             }
 
             if (accountNumber != null)
             {
-                transactionHistoryModel.BillPayList =
+                scheduledPaysViewModel.BillPayList =
                     await _dataAccess.GetPagedBillPayments((int)accountNumber, page);
-                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
+                scheduledPaysViewModel.SelectedAccountNumber = (int)accountNumber;
             }
 
-            return View(transactionHistoryModel);
+            return View(scheduledPaysViewModel);
         }
 
         public async Task<IActionResult> Create(int accountNumber, BillPay billPay)

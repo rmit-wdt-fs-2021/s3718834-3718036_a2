@@ -18,6 +18,12 @@
            asp-action="Index" asp-route-accountNumber="@account.AccountNumber">@($"{account.AccountNumber} ({account.AccountType})")</a>
     }
 }
+else
+{
+    <h1>No Accounts detected. Please create a new account</h1>
+
+    <a href="../">Back to Home</a>
+}
 
 @if (Model.BillPayList != null)
 {

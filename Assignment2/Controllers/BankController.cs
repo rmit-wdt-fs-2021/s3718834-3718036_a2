@@ -237,7 +237,7 @@ namespace Assignment2.Controllers
             switch (transactionHistoryModel.Accounts.Count)
             {
                 case 0:
-                    return RedirectToAction(actionName: "Error", controllerName: "Home");
+                    return View(transactionHistoryModel);
                 case 1:
                     accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
                     break;
