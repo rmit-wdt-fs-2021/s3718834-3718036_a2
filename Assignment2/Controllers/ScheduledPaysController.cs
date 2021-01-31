@@ -51,9 +51,10 @@ namespace Assignment2.Controllers
             return View(transactionHistoryModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int accountNumber, BillPay billPay)
         {
-            return View();
+            var selectedAccount = await _dataAccess.GetAccount(accountNumber);
+            return View(billPay);
         }
 
         [HttpPost]
@@ -64,6 +65,13 @@ namespace Assignment2.Controllers
             {
                 var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
                 var balance = await _dataAccess.GetAccountBalance(selectedAccount);
+
+                // Check that the payee the payment is going to actually exists.
+                //if(billPay.PayeeId == null)
+                //{
+                //    ModelState.AddModelError(nameof(billPay.PayeeId), "Payee with id " + billPay.PayeeId + " does not exist.");
+                //    return View(billPay);
+                //}
 
                 if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
                 {

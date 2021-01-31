@@ -13,11 +13,7 @@
         <form asp-action="Modify">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BillPayId" />
-            <div class="form-group">
-                <label asp-for="AccountNumber" class="control-label"></label>
-                <input asp-for="AccountNumber" class="form-control" />
-                <span asp-validation-for="AccountNumber" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="AccountNumber" class="form-control" value="@Model.AccountNumber" />
             <div class="form-group">
                 <label asp-for="PayeeId" class="control-label"></label>
                 <input asp-for="PayeeId" class="form-control" />
