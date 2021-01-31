@@ -137,7 +137,7 @@ namespace Assignment2.Controllers
         /// <param name="payeeId"></param>
         /// <returns>The payee object</returns>
         /// <exception cref="RecordMissingException">The Payee object doesn't exist</exception>
-        public Task<Payee> GetPayee(int payeeId);
+        public Task<bool> PayeeExists(int payeeId);
 
         public Task<List<Customer>> GetCustomersWithLogin();
 
@@ -427,22 +427,16 @@ namespace Assignment2.Controllers
         }
 
 
-        /// <summary>
-        /// Gets a payee with specified id as defined by the user.
-        /// </summary>
-        /// <param name="payeeId"></param>
-        /// <returns>The payee object</returns>
-        /// <exception cref="RecordMissingException">The Payee object doesn't exist</exception>
-        public async Task<Payee> GetPayee(int payeeId)
+        public async Task<bool> PayeeExists(int payeeId)
         {
             try
             {
-                var result = await _context.Payee.FirstAsync(a => a.PayeeId == payeeId);
-                return result;
+                await _context.Payee.FirstAsync(a => a.PayeeId == payeeId);
+                return true;
             }
             catch (InvalidOperationException)
             {
-                throw new RecordMissingException("No payee with provided PayeeId found.");
+                return false;
             }
         }
 

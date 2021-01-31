@@ -65,9 +65,14 @@ namespace Assignment2.Controllers
             {
                 var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
                 var balance = await _dataAccess.GetAccountBalance(selectedAccount);
-                
+
                 // Check that the payee does in fact exist in the database.
-                await _dataAccess.GetPayee(billPay.PayeeId);
+                if (!await _dataAccess.PayeeExists(billPay.PayeeId))
+                {
+                    ModelState.AddModelError(nameof(billPay.PayeeId), "Provided payee doesn't exist");
+                    return View(billPay);
+                }
+               
 
                 if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
                 {
