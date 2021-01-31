@@ -28,6 +28,8 @@ namespace Assignment2.Data
                 entity.Property(customer => customer.State)
                     .HasConversion(state => state.ToString(),
                         dbValue => Enum.Parse<State>(dbValue));
+
+                
             });
             
             builder.Entity<Account>(entity =>

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdminSite\AdminSite.csproj" />
+    <ProjectReference Include="..\AdminWebsite\AdminWebsite.csproj" />
     <ProjectReference Include="..\Assignment2\Assignment2.csproj" />
   </ItemGroup>
 
