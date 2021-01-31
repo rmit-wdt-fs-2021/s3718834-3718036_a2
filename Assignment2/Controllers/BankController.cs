@@ -88,17 +88,10 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
 
-            // Check that the user has enough money to withdraw the desired amount.
-            if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
-            {
-                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
-                return View(viewModel);
-            }
-
             // Check that the user would not go below the minimum balance requirements of their accounts when withdrawing.
-            if((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount < 200))
+            if(balance - viewModel.Amount < viewModel.Account.MinimumBalance())
             {
-                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
+                ModelState.AddModelError(nameof(viewModel.Amount), $"Amount must not go lower than the minimum balance requirements of ${viewModel.Account.MinimumBalance()}");
                 return View(viewModel);
             }
 
@@ -113,7 +106,7 @@ namespace Assignment2.Controllers
             // Charge the user a service fee if they have used up the free transactions.
             if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
             {
-                if ((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount - (decimal)0.1 < 200))
+                if (balance - viewModel.Amount - (decimal)0.1 < viewModel.Account.MinimumBalance())
                 {
                     ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                     return View(viewModel);

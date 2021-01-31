@@ -56,5 +56,10 @@ namespace Assignment2.Models
             
             return (decimal)(_balance += amount);
         }
+
+        public decimal MinimumBalance()
+        {
+            return AccountType == AccountType.Checking ? 200 : 0;
+        }
     }
 }

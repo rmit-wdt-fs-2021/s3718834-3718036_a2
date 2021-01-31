@@ -33,38 +33,42 @@ namespace Assignment2.BackgroundServices
 
             while (!cancellationToken.IsCancellationRequested)
             {
+                _logger.LogDebug("Checking if there are scheduled payments");
                 var scheduledBillPays = await context.BillPay
                     .Where(billPay => billPay.Status == Status.Waiting 
-                    && billPay.Period == Period.OnceOff).ToListAsync();
-                foreach (var billPay in scheduledBillPays)
+                    && billPay.Period == Period.OnceOff).ToListAsync(cancellationToken);
+                
+                _logger.LogInformation("Found {} payments to process", scheduledBillPays.Count);
+                // Loop through payments we can process
+                foreach (var billPay in scheduledBillPays.Where(billPay => billPay.Status == Status.Waiting && billPay.Period == Period.OnceOff))
                 {
-                    if (billPay.Status == Status.Waiting && billPay.Period == Period.OnceOff)
+                    // Retrieve the bill payments attached account so we can update the balance
+                    await context.Entry(billPay).Reference(b => b.Account).LoadAsync(cancellationToken);
+                    // Retrieve the bill payment's transactions so we can add another
+                    await context.Entry(billPay.Account).Collection(a => a.Transactions).LoadAsync(cancellationToken);
+
+                    if (await billPay.Account.Balance(dataAccessProvider) -  billPay.Amount < billPay.Account.MinimumBalance())
                     {
-                        await context.Entry(billPay).Reference(b => b.Account).LoadAsync();
-                        await context.Entry(billPay.Account).Collection(a => a.Transactions).LoadAsync();
-
-                        if (await billPay.Account.Balance(dataAccessProvider) < billPay.Amount)
+                        billPay.Status = Status.Fail;
+                    }
+                    else
+                    {
+                        billPay.Account.Transactions.Add(new Transaction
                         {
-                            billPay.Status = Status.Fail;
-                        }
-                        else
-                        {
-                            billPay.Account.Transactions.Add(new Transaction
-                            {
-                                TransactionType = TransactionType.BillPay,
-                                AccountNumber = billPay.AccountNumber,
-                                Amount = billPay.Amount,
-                                Comment = $"Scheduled payment to {billPay.PayeeId}",
-                                ModifyDate = DateTime.UtcNow,
-                                Account = billPay.Account
-                            });
+                            TransactionType = TransactionType.BillPay,
+                            AccountNumber = billPay.AccountNumber,
+                            Amount = billPay.Amount,
+                            Comment = $"Scheduled payment to {billPay.PayeeId}",
+                            ModifyDate = DateTime.UtcNow,
+                            Account = billPay.Account
+                        });
 
-                            await billPay.Account.UpdateBalance(-billPay.Amount, dataAccessProvider);
-                            billPay.Status = Status.Success;
-                        }
+                        await billPay.Account.UpdateBalance(-billPay.Amount, dataAccessProvider);
+                        billPay.Status = Status.Success;
                     }
                 }
-                await context.SaveChangesAsync();
+                _logger.LogInformation("Processing complete, waiting");
+                await context.SaveChangesAsync(cancellationToken);
                 await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
