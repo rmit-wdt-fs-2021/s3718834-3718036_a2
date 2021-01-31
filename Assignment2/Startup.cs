@@ -1,4 +1,5 @@
 using Assignment2.Data;
+using Assignment2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Assignment2.BackgroundServices;
+using Assignment2.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Assignment2.Service;
 
 namespace Assignment2
 {
@@ -32,9 +38,23 @@ namespace Assignment2
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<ApplicationUser, IdentityRole<string>>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddDefaultUI()
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
+
+            services.AddTransient<IEmailSender, EmailService>();
+            services.Configure<EmailSenderSecrets>(Configuration);
+
+            services.AddScoped<IActivityReportService, ActivityReportService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDataAccessRepository, DataAccessController>();
+
+
+            services.AddHostedService<ActivityReportScheduler>(); // Comment out to disable activity reports
+            services.AddHostedService<BillPaymentsBackgroundService>(); // Comment out to disable activity reports
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +67,7 @@ namespace Assignment2
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Other/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -63,7 +83,7 @@ namespace Assignment2
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Bank}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

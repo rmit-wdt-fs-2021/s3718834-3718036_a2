@@ -1,0 +1,64 @@
+﻿@inject IDataAccessRepository DataAccessProvider
+@using Assignment2.Controllers
+@model IEnumerable<Assignment2.ViewModels.ActivityReportModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Your Activity Report</h1>
+
+@foreach (var activityReportModel in Model)
+{
+    <h2>@(activityReportModel.Account.AccountNumber) (@(activityReportModel.Account.AccountType)): $@(await activityReportModel.Account.Balance(DataAccessProvider)) (@activityReportModel.BalanceChange.ToString("+0.#####;-0.#####"))</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].TransactionType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].AccountNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].DestAccount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Comment)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].ModifyDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in activityReportModel.Transactions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => transaction.TransactionType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => transaction.AccountNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => transaction.DestAccount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => transaction.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => transaction.Comment)
+                    </td>
+                    <td>
+                        @transaction.ModifyDate.ToLocalTime()
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

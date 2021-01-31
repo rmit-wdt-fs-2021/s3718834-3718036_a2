@@ -1,0 +1,90 @@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Common
+
+@model Assignment2.ViewModels.TransactionHistoryModel
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+@if (Model.Accounts.Count == 2)
+{
+    <h1>Please select an account</h1>
+
+    @foreach (var account in Model.Accounts)
+    {
+        <a class="btn btn-primary"
+           asp-action="Transactions" asp-route-accountNumber="@account.AccountNumber">@($"{account.AccountNumber} ({account.AccountType})")</a>
+    }
+}
+else
+{
+    <h1>No Accounts detected. Please create a new account</h1>
+
+    <a href="../">Back to Home</a>
+}
+
+
+@if (Model.Transactions != null)
+{
+    <h1>Transactions for @(Model.SelectedAccountNumber)</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].TransactionType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].AccountNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].DestAccount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Comment)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0])
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Transactions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TransactionType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountNumber)
+                    </td>
+                    <td>
+                        @if (item.DestAccount != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.DestAccount)
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comment)
+                    </td>
+                    <td>
+                        @item.ModifyDate.ToLocalTime()
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.PagedListPager(Model.Transactions, page => Url.Action("Transactions", new { accountNumber = Model.SelectedAccountNumber, page = page }),
+       new PagedListRenderOptions
+            {
+           LiElementClasses = new[] { "page-item" },
+           PageClasses = new[] { "page-link" }
+       })
+}

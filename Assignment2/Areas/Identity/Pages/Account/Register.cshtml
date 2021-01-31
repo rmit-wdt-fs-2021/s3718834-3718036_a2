@@ -1,0 +1,77 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h4>Create a new account.</h4>
+            <hr/>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.LoginId"></label>
+                <input asp-for="RegisterInput.LoginId" class="form-control"/>
+                <span asp-validation-for="RegisterInput.LoginId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Email"></label>
+                <input asp-for="RegisterInput.Email" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Name"></label>
+                <input asp-for="RegisterInput.Name" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Tfn"></label>
+                <input asp-for="RegisterInput.Tfn" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Tfn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Address"></label>
+                <input asp-for="RegisterInput.Address" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.City"></label>
+                <input asp-for="RegisterInput.City" class="form-control"/>
+                <span asp-validation-for="RegisterInput.City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.State" class="control-label"></label>
+                <select asp-for="RegisterInput.State" class="form-control" asp-items="Html.GetEnumSelectList<State>()"></select>
+                <span asp-validation-for="RegisterInput.State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.PostCode"></label>
+                <input asp-for="RegisterInput.PostCode" class="form-control"/>
+                <span asp-validation-for="RegisterInput.PostCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Phone"></label>
+                <input asp-for="RegisterInput.Phone" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.Password"></label>
+                <input asp-for="RegisterInput.Password" class="form-control"/>
+                <span asp-validation-for="RegisterInput.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterInput.ConfirmPassword"></label>
+                <input asp-for="RegisterInput.ConfirmPassword" class="form-control"/>
+                <span asp-validation-for="RegisterInput.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
