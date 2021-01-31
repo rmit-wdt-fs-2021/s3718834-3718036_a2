@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Assignment2.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class PayeesController : Controller
     {
         private readonly ApplicationDbContext _context;

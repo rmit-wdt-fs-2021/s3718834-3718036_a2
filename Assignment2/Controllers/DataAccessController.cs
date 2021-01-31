@@ -377,12 +377,16 @@ namespace Assignment2.Controllers
 
         public async Task LockCustomer(int customerId)
         {
-            var login = await _context.Users.FirstAsync(li => li.CustomerId == customerId);
+            var customer = await _context.Customer.Where(c => c.CustomerId == customerId).FirstAsync();
 
-            if (login != null)
+
+            await _context.Entry(customer).Reference(c => c.Login).LoadAsync();
+
+
+            if (customer.Login != null)
             {
-                login.LockoutEnabled = true;
-                login.LockoutEnd = DateTime.Now.AddMinutes(1);
+                customer.Login.LockoutEnabled = true;
+                customer.Login.LockoutEnd = DateTime.Now.AddMinutes(1);
                 await _context.SaveChangesAsync();
             }
         }

@@ -6,10 +6,11 @@ using System.Linq.Expressions;
 using System.Text;
 using Assignment2.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.AspNetCore.Identity;
 
 namespace Assignment2.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<string>, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,7 +30,9 @@ namespace Assignment2.Data
                     .HasConversion(state => state.ToString(),
                         dbValue => Enum.Parse<State>(dbValue));
 
-                
+                entity.HasOne(customer => customer.Login)
+                .WithOne(login => login.Customer)
+                .HasForeignKey<Customer>(customer => customer.LoginId);
             });
             
             builder.Entity<Account>(entity =>
@@ -51,11 +54,6 @@ namespace Assignment2.Data
             builder.Entity<Payee>().Property(customer => customer.State)
                 .HasConversion(state => state.ToString(),
                     dbValue => Enum.Parse<State>(dbValue));
-
-            builder.Entity<ApplicationUser>()
-                .HasOne(login => login.Customer)
-                .WithOne(customer => customer.Login)
-                .HasForeignKey<ApplicationUser>(applicationUser => applicationUser.CustomerId);
             
 
             builder.Entity<BillPay>()

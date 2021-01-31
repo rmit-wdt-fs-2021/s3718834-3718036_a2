@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace AdminWebsite.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
