@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Assignment2.Data;
 using Assignment2.Models;
 using Microsoft.AspNetCore.Authorization;
+using Assignment2.BackgroundServices;
 
 namespace Assignment2.Controllers
 {
@@ -60,6 +61,7 @@ namespace Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
+                billPay.Status = Status.Waiting;
                 _context.Add(billPay);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

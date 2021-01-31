@@ -51,6 +51,7 @@ namespace Assignment2
 
 
             services.AddHostedService<ActivityReportScheduler>(); // Comment out to disable activity reports
+            services.AddHostedService<BillPaymentsBackgroundService>(); // Comment out to disable activity reports
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
