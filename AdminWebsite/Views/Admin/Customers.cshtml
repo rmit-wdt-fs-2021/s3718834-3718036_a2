@@ -59,7 +59,7 @@
                     @Html.DisplayFor(modelItem => item.Phone)
                 </td>
                 <td>
-                    @(item.Login.LockoutEnd != null && item.Login.LockoutEnd > DateTime.Now)
+                    @(item.Login.LockoutEnd != null && item.Login.LockoutEnd > DateTime.UtcNow)
                 </td>
                 <td>
                     <a class="btn btn-primary"

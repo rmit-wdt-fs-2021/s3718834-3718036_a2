@@ -77,7 +77,7 @@
                         @Html.DisplayFor(modelItem => item.Comment)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ModifyDate)
+                        @Html.DisplayFor(modelItem => item.ModifyDate.ToLocalTime())
                     </td>
                 </tr>
             }

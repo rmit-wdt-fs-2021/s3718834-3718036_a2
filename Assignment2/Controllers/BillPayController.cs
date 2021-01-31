@@ -95,6 +95,8 @@ namespace Assignment2.Controllers
 
                 billPay.Status = Status.Waiting;
                 billPay.ModifyDate = DateTime.UtcNow;
+                billPay.ScheduleDate = billPay.ScheduleDate.ToUniversalTime();
+
                 _context.Add(billPay);
                 await _context.SaveChangesAsync();
 
@@ -145,6 +147,7 @@ namespace Assignment2.Controllers
                     }
 
                     billPay.ModifyDate = DateTime.UtcNow;
+                    billPay.ScheduleDate = billPay.ScheduleDate.ToUniversalTime();
                     _context.Update(billPay);
                     await _context.SaveChangesAsync();
                 }

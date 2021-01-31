@@ -47,7 +47,7 @@ else
                     @Html.DisplayNameFor(model => model.Transactions[0].Comment)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Transactions[0].ModifyDate)
+                    @Html.DisplayNameFor(model => model.Transactions[0])
                 </th>
                 <th></th>
             </tr>
@@ -75,7 +75,7 @@ else
                         @Html.DisplayFor(modelItem => item.Comment)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ModifyDate)
+                        @Html.DisplayFor(modelItem => item.ModifyDate.ToLocalTime())
                     </td>
                 </tr>
             }

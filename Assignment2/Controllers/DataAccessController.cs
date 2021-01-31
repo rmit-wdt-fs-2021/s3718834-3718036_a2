@@ -458,7 +458,7 @@ namespace Assignment2.Controllers
             if (customer.Login != null)
             {
                 customer.Login.LockoutEnabled = true;
-                customer.Login.LockoutEnd = DateTime.Now.AddMinutes(1);
+                customer.Login.LockoutEnd = DateTime.UtcNow.AddMinutes(1);
                 await _context.SaveChangesAsync();
             }
         }
@@ -488,7 +488,7 @@ namespace Assignment2.Controllers
             }
 
 
-            return totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date).ToList();
+            return totalTransactions.Where(transaction => transaction.ModifyDate.ToLocalTime() >= minDate.Date && transaction.ModifyDate.ToLocalTime() <= maxDate.Date).ToList();
         }
 
         public async Task<List<BillPay>> GetScheduledPayments()
