@@ -34,13 +34,13 @@ namespace Assignment2.Models
         public int DestAccount { get; set; }
 
         [DataType(DataType.Currency)]
-        [Required, Column(TypeName = "decimal(18, 2)")]
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Amount { get; set; }
 
         [StringLength(255)]
         public string Comment { get; set; }
 
-        [Required, DataType(DataType.DateTime)]
+        [DataType(DataType.DateTime)]
         [Display(Name = "Last Modified")]
         public DateTime ModifyDate { get; set; }
         

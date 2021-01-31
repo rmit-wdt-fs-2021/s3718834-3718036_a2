@@ -13,13 +13,14 @@ namespace Assignment2.Models
         [StringLength(40)]
         public string City { get; set; }
 
-        [StringLength(4)]
+        [StringLength(10)]
         [RegularExpression("[0-9]{4}")]
         public string PostCode { get; set; }
         
+        [StringLength(20)]
         public State State { get; set; }
 
-        [Phone, Required]
+        [Phone, Required, StringLength(15)]
         [RegularExpression("^(\\+61) [0-9]{4} [0-9]{4}")]
         public string Phone { get; set; }
     }
