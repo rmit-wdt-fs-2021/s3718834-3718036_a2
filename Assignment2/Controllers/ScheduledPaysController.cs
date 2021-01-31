@@ -13,7 +13,7 @@ using X.PagedList;
 
 namespace Assignment2.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class ScheduledPaysController : Controller
     {
         private readonly ApplicationDbContext _context;

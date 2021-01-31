@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment2.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Customer")]
     public class BankController : Controller
     {
         private readonly IDataAccessProvider _dataAccess;

@@ -98,7 +98,7 @@ namespace Assignment2.Controllers
         /// <returns>The customer retrieved</returns>
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
-
+        
         /// <summary>
         /// Gets a billPay with the provided billPay id
         /// </summary>
@@ -116,11 +116,23 @@ namespace Assignment2.Controllers
         /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
         public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
 
+
         public Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType);
 
         public Task<int> GetTransactionsWithFees(int accountNumber);
 
         public Task<Payee> GetPayee(int payeeId);
+
+        
+        
+        public Task<List<Customer>> GetCustomersWithLogin();
+        public Task LockCustomer(int customerId);
+        public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
+
+        public Task<List<BillPay>> GetScheduledPayments();
+
+        public Task BlockPayment(int billPayId);
+
     }
 
     /// <summary>
@@ -365,7 +377,6 @@ namespace Assignment2.Controllers
                 .ToPagedListAsync(page, 8);
         }
 
-
         /// <summary>
         /// Gets the total number of withdrawals and transfers a user has made of a specified type.
         /// </summary>
@@ -411,6 +422,70 @@ namespace Assignment2.Controllers
             catch (InvalidOperationException)
             {
                 throw new RecordMissingException("No payee with provided PayeeId found.");
+
+        public async Task<List<Customer>> GetCustomersWithLogin()
+        {
+            return await _context.Customer.Include(customer => customer.Login).ToListAsync();
+        }
+
+        public async Task LockCustomer(int customerId)
+        {
+            var customer = await _context.Customer.Where(c => c.CustomerId == customerId).FirstAsync();
+
+
+            await _context.Entry(customer).Reference(c => c.Login).LoadAsync();
+
+
+            if (customer.Login != null)
+            {
+                customer.Login.LockoutEnabled = true;
+                customer.Login.LockoutEnd = DateTime.Now.AddMinutes(1);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null)
+        {
+            IQueryable<Transaction> totalTransactions = Enumerable.Empty<Transaction>().AsQueryable();
+            if (customerId != null)
+            {
+                var accounts = await GetAccounts(customerId);
+                foreach (var account in accounts)
+                {
+                    var transactions = _context.Transaction.Where(t => t.AccountNumber == account.AccountNumber);
+                    if (totalTransactions == null)
+                    {
+                        totalTransactions = transactions;
+                    } else
+                    {
+                        Queryable.Concat(totalTransactions, transactions);
+                    }
+                  
+                }
+            }
+            else
+            {
+                totalTransactions = _context.Transaction;
+            }
+
+
+            return totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date).ToList();
+        }
+
+        public async Task<List<BillPay>> GetScheduledPayments()
+        {
+            return await _context.BillPay.Where(billPay => billPay.Status == Status.Waiting).ToListAsync(); 
+        }
+
+        public async Task BlockPayment(int billPayId)
+        {
+            var billPay = await _context.BillPay.FirstAsync(billPay => billPay.BillPayId == billPayId);
+
+            if(billPay.Status == Status.Waiting)
+            {
+                billPay.Status = Status.Blocked;
+                await _context.SaveChangesAsync();
+
             }
         }
     }

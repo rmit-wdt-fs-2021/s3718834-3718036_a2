@@ -12,7 +12,7 @@ using Assignment2.BackgroundServices;
 
 namespace Assignment2.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class BillPaysController : Controller
     {
         private readonly ApplicationDbContext _context;
