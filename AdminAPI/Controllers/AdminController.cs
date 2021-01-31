@@ -49,5 +49,23 @@ namespace AdminAPI.Controllers
         {
             await _dataAccess.LockCustomer(customerId);
         }
+
+
+        [HttpGet("ScheduledPayments")]
+        public async Task<List<BillPay>> ScheduledPayments()
+        {
+            var billPays = await _dataAccess.GetScheduledPayments();
+            foreach (var billPay in billPays)
+            {
+                billPay.Account = null;
+            }
+            return billPays;
+        }
+
+        [HttpGet("Block/{billPayId}")]
+        public async Task BlockPayment(int billPayId)
+        {
+            await _dataAccess.BlockPayment(billPayId);
+        }
     }
 }

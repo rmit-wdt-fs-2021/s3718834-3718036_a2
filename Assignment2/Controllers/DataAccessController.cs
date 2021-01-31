@@ -120,6 +120,10 @@ namespace Assignment2.Controllers
         public Task<List<Customer>> GetCustomersWithLogin();
         public Task LockCustomer(int customerId);
         public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
+
+        public Task<List<BillPay>> GetScheduledPayments();
+
+        public Task BlockPayment(int billPayId);
     }
 
     /// <summary>
@@ -409,6 +413,22 @@ namespace Assignment2.Controllers
 
 
             return totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date).ToList();
+        }
+
+        public async Task<List<BillPay>> GetScheduledPayments()
+        {
+            return await _context.BillPay.Where(billPay => billPay.Status == Status.Waiting).ToListAsync(); 
+        }
+
+        public async Task BlockPayment(int billPayId)
+        {
+            var billPay = await _context.BillPay.FirstAsync(billPay => billPay.BillPayId == billPayId);
+
+            if(billPay.Status == Status.Waiting)
+            {
+                billPay.Status = Status.Blocked;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 

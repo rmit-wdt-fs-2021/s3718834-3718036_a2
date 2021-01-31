@@ -89,10 +89,29 @@ namespace AdminSite.Controllers
             return RedirectToAction(nameof(Customers));
         }
 
-
-        public IActionResult Block()
+        public async Task<IActionResult> Scheduled()
         {
-            return View();
+            var response = await _client.GetAsync("api/Admin/ScheduledPayments");
+
+            List<BillPay> billPays;
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                billPays = JsonConvert.DeserializeObject<List<BillPay>>(result);
+            }
+            else
+            {
+                billPays = new List<BillPay>();
+            }
+
+            return View(billPays);
+        }
+
+        public async Task<IActionResult> Block(string billPayId)
+        {
+            var response = await _client.GetAsync($"/api/Admin/Block/{billPayId}");
+
+            return RedirectToAction(nameof(Scheduled));
         }
     }
 }
