@@ -14,12 +14,12 @@ using X.PagedList;
 namespace Assignment2.Controllers
 {
     [Authorize(Roles = "Customer")]
-    public class ScheduledPaysController : Controller
+    public class BillPayController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IDataAccessProvider _dataAccess;
 
-        public ScheduledPaysController(ApplicationDbContext context, IDataAccessProvider dataAccess)
+        public BillPayController(ApplicationDbContext context, IDataAccessProvider dataAccess)
         {
             _context = context;
             _dataAccess = dataAccess;
