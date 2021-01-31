@@ -26,7 +26,6 @@ namespace Assignment2.Models
 
         [NotMapped] private decimal? _balance;
         
-        [StringLength(1)]
         public AccountType AccountType { get; set; }
 
         [Required]
