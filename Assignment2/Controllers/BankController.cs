@@ -203,7 +203,7 @@ namespace Assignment2.Controllers
                 {
                     AccountNumber = viewModel.AccountNumber,
                     TransactionType = TransactionType.ServiceCharge,
-                    Amount = (decimal)0.10,
+                    Amount = (decimal)0.20,
                     ModifyDate = DateTime.UtcNow
                 });
             }

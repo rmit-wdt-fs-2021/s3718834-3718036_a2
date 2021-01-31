@@ -100,6 +100,8 @@ namespace Assignment2.Data.Seed
                 },
             }.ToArray());
             }
+
+            await context.SaveChangesAsync();
             
         }
 

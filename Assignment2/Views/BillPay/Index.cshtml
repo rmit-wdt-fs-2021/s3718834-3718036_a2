@@ -48,30 +48,36 @@ else
                 <th>
                     @Html.DisplayNameFor(model => model.BillPayList[0].Period)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BillPayList[0].Status)
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.BillPayList)
             {
-                <tr>
-                    <td>
-                        <a asp-action="Modify" asp-route-billPayId="@item.BillPayId">Edit</a> |
-                        <a asp-action="Delete" asp-route-billPayId="@item.BillPayId">Delete</a>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Payee.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Amount)
-                    </td>
-                    <td>
-                        @item.ScheduleDate.ToLocalTime()
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Period)
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    <a asp-action="Modify" asp-route-billPayId="@item.BillPayId">Edit</a> |
+                    <a asp-action="Delete" asp-route-billPayId="@item.BillPayId">Delete</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Payee.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @item.ScheduleDate.ToLocalTime()
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Period)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
             }
         </tbody>
     </table>

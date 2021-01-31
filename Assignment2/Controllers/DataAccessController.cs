@@ -487,8 +487,11 @@ namespace Assignment2.Controllers
                 totalTransactions = _context.Transaction;
             }
 
+            minDate = minDate.ToUniversalTime();
+            maxDate = maxDate.ToUniversalTime();
 
-            return totalTransactions.Where(transaction => transaction.ModifyDate.ToLocalTime() >= minDate.Date && transaction.ModifyDate.ToLocalTime() <= maxDate.Date).ToList();
+
+            return totalTransactions.Where(transaction => transaction.ModifyDate >= minDate.Date && transaction.ModifyDate <= maxDate.Date).ToList();
         }
 
         public async Task<List<BillPay>> GetScheduledPayments()
