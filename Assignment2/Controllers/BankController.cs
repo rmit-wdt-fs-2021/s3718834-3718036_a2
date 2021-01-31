@@ -74,10 +74,12 @@ namespace Assignment2.Controllers
                 });
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Withdraw([Bind("AccountNumber, Amount")] AtmTransactionViewModel viewModel)
         {
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
+            decimal balance = await _dataAccess.GetAccountBalance(viewModel.Account);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -93,12 +95,32 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
 
+            // Check that the user would not go below the minimum balance requirements of their accounts when withdrawing.
+            if((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount < 200))
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
+                return View(viewModel);
+            }
+
             // Check whether the withdraw amount has more than 2 decimal places.
             // Code originally sourced from tutorial 5
             if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
                 return View(viewModel);
+            }
+
+            // Charge the user a service fee if they have used up the free transactions.
+            if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
+            {
+                await viewModel.Account.UpdateBalance((decimal) 0.10, _dataAccess);
+                await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    TransactionType = TransactionType.ServiceCharge,
+                    Amount = (decimal) 0.10,
+                    ModifyDate = DateTime.UtcNow
+                });
             }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
@@ -131,11 +153,25 @@ namespace Assignment2.Controllers
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
             viewModel.DestinationAccount =
                 await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
+            decimal balance = await _dataAccess.GetAccountBalance(viewModel.Account);
+
+            // Check that the user is not trying to send money to the account they are sending it from (i.e. 4100 -> 4100)
+            if(viewModel.DestinationAccountNumber == viewModel.AccountNumber)
+            {
+                ModelState.AddModelError(nameof(viewModel.DestinationAccountNumber), "You cannot transfer money to the same account.");
+                return View(viewModel);
+            }
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
+                return View(viewModel);
+            }
+
+            if ((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount < 200))
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                 return View(viewModel);
             }
 
@@ -147,10 +183,24 @@ namespace Assignment2.Controllers
             }
 
             // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
             if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
                 return View(viewModel);
+            }
+
+            // Charge the user a service fee if they have used up the free transactions.
+            if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
+            {
+                await viewModel.Account.UpdateBalance((decimal)0.20, _dataAccess);
+                await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    TransactionType = TransactionType.ServiceCharge,
+                    Amount = (decimal)0.10,
+                    ModifyDate = DateTime.UtcNow
+                });
             }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);

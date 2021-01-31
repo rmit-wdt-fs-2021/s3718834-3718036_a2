@@ -22,7 +22,7 @@
 @if (Model.BillPayList != null)
 {
     <h1>Scheduled Payments for @(Model.SelectedAccountNumber)</h1>
-    <a class="btn btn-primary" asp-action="Create" asp-route-selectedAccountNumber="@Model.SelectedAccountNumber">New Payment</a>
+    <a class="btn btn-primary" asp-action="Create" asp-route-accountNumber="@Model.SelectedAccountNumber">New Payment</a>
     <hr />
     <table class="table">
         <thead>

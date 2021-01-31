@@ -115,6 +115,14 @@ namespace Assignment2.Controllers
         /// <returns>Bill payments for the provided account in a paged format</returns>
         /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
         public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
+
+
+        public Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType);
+
+        public Task<int> GetTransactionsWithFees(int accountNumber);
+
+        public Task<Payee> GetPayee(int payeeId);
+
         
         
         public Task<List<Customer>> GetCustomersWithLogin();
@@ -124,6 +132,7 @@ namespace Assignment2.Controllers
         public Task<List<BillPay>> GetScheduledPayments();
 
         public Task BlockPayment(int billPayId);
+
     }
 
     /// <summary>
@@ -357,7 +366,6 @@ namespace Assignment2.Controllers
        /// <param name="accountNumber">The account number of the account to get bill payments for</param>
        /// <param name="page">The page to start at</param>
        /// <returns>Bill payments for the provided account in a paged format</returns>
-       /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
         public async Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page)
         {
             var account = await GetUserAccount(accountNumber);
@@ -369,6 +377,51 @@ namespace Assignment2.Controllers
                 .ToPagedListAsync(page, 8);
         }
 
+        /// <summary>
+        /// Gets the total number of withdrawals and transfers a user has made of a specified type.
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get transactions for</param>
+        /// <param name="transactionType">The transaction type which to get transactions for</param>
+        /// <returns>Total number of transactions with this types</returns>
+        public async Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType)
+        {
+            var account = await GetUserAccountWithTransactions(accountNumber);
+
+            int temp = account.Transactions.Where(n => n.TransactionType == transactionType).Count();
+
+            return temp;
+        }
+
+        /// <summary>
+        /// Gets the total number of withdrawals and transfers a user has made.
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get transactions for</param>
+        /// <returns>Total number of transactions with these types</returns>
+        public async Task<int> GetTransactionsWithFees(int accountNumber)
+        {
+            int totalTransfers = await GetTransactionWithType(accountNumber, TransactionType.Transfer);
+            int totalWithdraws = await GetTransactionWithType(accountNumber, TransactionType.Withdraw);
+
+            return totalTransfers + totalWithdraws;
+        }
+
+
+        /// <summary>
+        /// Gets a payee with specified id as defined by the user.
+        /// </summary>
+        /// <param name="payeeId"></param>
+        /// <returns>The payee object</returns>
+        /// <exception cref="RecordMissingException">The Payee object doesn't exist</exception>
+        public async Task<Payee> GetPayee(int payeeId)
+        {
+            try
+            {
+                var result = await _context.Payee.FirstAsync(a => a.PayeeId == payeeId);
+                return result;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new RecordMissingException("No payee with provided PayeeId found.");
 
         public async Task<List<Customer>> GetCustomersWithLogin()
         {
@@ -432,6 +485,7 @@ namespace Assignment2.Controllers
             {
                 billPay.Status = Status.Blocked;
                 await _context.SaveChangesAsync();
+
             }
         }
     }

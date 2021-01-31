@@ -51,9 +51,10 @@ namespace Assignment2.Controllers
             return View(transactionHistoryModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int accountNumber, BillPay billPay)
         {
-            return View();
+            var selectedAccount = await _dataAccess.GetAccount(accountNumber);
+            return View(billPay);
         }
 
         [HttpPost]
@@ -63,10 +64,21 @@ namespace Assignment2.Controllers
             if (ModelState.IsValid)
             {
                 var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
+                var balance = await _dataAccess.GetAccountBalance(selectedAccount);
+                
+                // Check that the payee does in fact exist in the database.
+                await _dataAccess.GetPayee(billPay.PayeeId);
 
                 if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
                 {
                     ModelState.AddModelError(nameof(billPay.Amount), "Amount must not exceed current balance.");
+                    return View(billPay);
+                }
+
+                // Check that the user would not go below the minimum balance requirements of their accounts when withdrawing.
+                if ((selectedAccount.AccountType == AccountType.Checking) && (balance - billPay.Amount < 200))
+                {
+                    ModelState.AddModelError(nameof(billPay.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                     return View(billPay);
                 }
 
@@ -115,10 +127,18 @@ namespace Assignment2.Controllers
                 try
                 {
                     var selectedAccount = await _dataAccess.GetAccount(billPay.AccountNumber);
+                    var balance = await _dataAccess.GetAccountBalance(selectedAccount);
 
                     if (billPay.Amount > await selectedAccount.Balance(_dataAccess))
                     {
                         ModelState.AddModelError(nameof(billPay.Amount), "Amount must not exceed current balance.");
+                        return View(billPay);
+                    }
+
+                    // Check that the user would not go below the minimum balance requirements of their accounts when withdrawing.
+                    if ((selectedAccount.AccountType == AccountType.Checking) && (balance - billPay.Amount < 200))
+                    {
+                        ModelState.AddModelError(nameof(billPay.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                         return View(billPay);
                     }
 
