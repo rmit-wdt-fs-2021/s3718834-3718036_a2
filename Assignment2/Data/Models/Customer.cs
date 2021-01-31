@@ -7,17 +7,6 @@ using System.Threading.Tasks;
 
 namespace Assignment2.Models
 {
-
-    public enum State
-    {
-        Vic,
-        Nsw,
-        Sa,
-        Qld,
-        Tas
-    }
-
-
     public class Customer : Person
     {
         [Key, Required]

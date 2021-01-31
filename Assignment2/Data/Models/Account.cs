@@ -14,8 +14,8 @@ namespace Assignment2.Models
     /// </summary>
     public enum AccountType
     {
-        Checking = 67, 
-        Saving = 83
+        Checking = 'C', 
+        Saving = 'S'
     }
 
     public class Account
@@ -26,6 +26,7 @@ namespace Assignment2.Models
 
         [NotMapped] private decimal? _balance;
         
+        [StringLength(1)]
         public AccountType AccountType { get; set; }
 
         [Required]

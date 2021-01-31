@@ -4,14 +4,16 @@ using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210131062922_fixed-tables")]
+    partial class fixedtables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,7 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
 
-                    b.Property<string>("AccountType")
-                        .IsRequired()
+                    b.Property<char>("AccountType")
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
@@ -144,8 +145,7 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("PayeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Period")
-                        .IsRequired()
+                    b.Property<char>("Period")
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
@@ -275,8 +275,7 @@ namespace Assignment2.Data.Migrations
                     b.Property<DateTime>("ModifyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
+                    b.Property<char>("TransactionType")
                         .HasColumnType("nvarchar(1)");
 
                     b.HasKey("TransactionId");

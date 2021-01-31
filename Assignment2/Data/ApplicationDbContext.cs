@@ -34,7 +34,7 @@ namespace Assignment2.Data
                 .WithOne(login => login.Customer)
                 .HasForeignKey<Customer>(customer => customer.LoginId);
             });
-            
+
             builder.Entity<Account>(entity =>
             {
                 entity.HasMany(account => account.BillPays)
@@ -45,21 +45,25 @@ namespace Assignment2.Data
                     .WithOne(transaction => transaction.Account)
                     .HasForeignKey(transaction => transaction.AccountNumber);
 
-            builder.Entity<Payee>()
-                .HasMany(payee => payee.BillPays)
-                .WithOne(billPay => billPay.Payee)
-                .HasForeignKey(billPay => billPay.PayeeId);
+                entity.Property(account => account.AccountType)
+.HasConversion(accountType => (char)accountType,
+   dbValue => (AccountType)dbValue);
             });
-            
+
+            builder.Entity<Payee>()
+               .HasMany(payee => payee.BillPays)
+               .WithOne(billPay => billPay.Payee)
+               .HasForeignKey(billPay => billPay.PayeeId);
+
             builder.Entity<Payee>().Property(customer => customer.State)
                 .HasConversion(state => state.ToString(),
                     dbValue => Enum.Parse<State>(dbValue));
-            
+
 
             builder.Entity<BillPay>()
                 .Property(billPay => billPay.Period)
-                .HasConversion(period => period.ToString(),
-                    dbValue => Enum.Parse<Period>(dbValue));
+                .HasConversion(period => (char) period,
+                    dbValue => (Period)(dbValue));
 
             builder.Entity<BillPay>()
                 .Property(billPay => billPay.Status)
@@ -69,8 +73,8 @@ namespace Assignment2.Data
 
             builder.Entity<Transaction>()
                 .Property(transaction => transaction.TransactionType)
-                .HasConversion(transactionType => (char) transactionType,
-                    dbValue => (TransactionType) dbValue);
+                .HasConversion(transactionType => (char)transactionType,
+                    dbValue => (TransactionType)dbValue);
         }
 
         public DbSet<Assignment2.Models.Account> Account { get; set; }

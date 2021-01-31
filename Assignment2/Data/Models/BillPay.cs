@@ -9,9 +9,9 @@ namespace Assignment2.Models
 {
     public enum Period
     {
-        Monthly, 
-        Quarterly,
-        OnceOff
+        Monthly = 'M', 
+        Quarterly = 'Q',
+        OnceOff = 'O'
     }
 
     public enum Status
@@ -41,7 +41,7 @@ namespace Assignment2.Models
         [Required, DataType(DataType.DateTime)]
         public DateTime ScheduleDate { get; set; }
 
-        [Required] 
+        [Required, StringLength(1)] 
         public Period Period { get; set; }
 
         [Required, DataType(DataType.DateTime)]
