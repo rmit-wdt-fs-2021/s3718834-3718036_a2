@@ -16,7 +16,7 @@ namespace Assignment2.Models
         BillPay = 'B'
     }
 
-    public class Transaction
+    public record Transaction
     {
         [Key, Required] 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
