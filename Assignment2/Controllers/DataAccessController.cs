@@ -116,10 +116,27 @@ namespace Assignment2.Controllers
         /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
         public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
 
+        /// <summary>
+        /// Gets the total number of withdrawals and transfers a user has made of a specified type.
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get transactions for</param>
+        /// <param name="transactionType">The transaction type which to get transactions for</param>
+        /// <returns>Total number of transactions with this types</returns>
         public Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType);
 
+        /// <summary>
+        /// Gets the total number of withdrawals and transfers a user has made.
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get transactions for</param>
+        /// <returns>Total number of transactions with these types</returns>
         public Task<int> GetTransactionsWithFees(int accountNumber);
 
+        /// <summary>
+        /// Gets a payee with specified id as defined by the user.
+        /// </summary>
+        /// <param name="payeeId"></param>
+        /// <returns>The payee object</returns>
+        /// <exception cref="RecordMissingException">The Payee object doesn't exist</exception>
         public Task<Payee> GetPayee(int payeeId);
 
         public Task<List<Customer>> GetCustomersWithLogin();
@@ -370,6 +387,11 @@ namespace Assignment2.Controllers
             var account = await GetUserAccount(accountNumber);
             
             await _context.Entry(account).Collection(a => a.BillPays).LoadAsync();
+
+            foreach(var billPay in account.BillPays)
+            {
+                _context.Entry(billPay).Reference(b => b.Payee).Load();
+            }
 
             return await account.BillPays
                 .OrderByDescending(billPay => billPay.ScheduleDate)
