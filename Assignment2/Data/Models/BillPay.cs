@@ -14,6 +14,14 @@ namespace Assignment2.Models
         OnceOff
     }
 
+    public enum Status
+    {
+        Waiting,
+        Blocked,
+        Success,
+        Fail
+    }
+
     public class BillPay
     {
         [Key, Required]
@@ -43,5 +51,6 @@ namespace Assignment2.Models
         
         public Payee Payee { get; set; }
 
+        public Status Status { get; set; }
     }
 }

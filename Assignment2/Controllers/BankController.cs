@@ -39,17 +39,18 @@ namespace Assignment2.Controllers
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
 
             // Check that the deposit amount is a positive integer.
-            if(viewModel.Amount <= 0)
+            if (viewModel.Amount <= 0)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
-            // // Check whether the deposit amount has more than 2 decimal places.
-            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            // {
-            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //     return View(viewModel);
-            // }
+            // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
@@ -84,18 +85,21 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
+
             // Check that the user has enough money to withdraw the desired amount.
             if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
             }
-            //  //Check whether the withdraw amount has more than 2 decimal places.
-            // if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            // {
-            //     ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //     return View(viewModel);
-            // }
+
+            // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
@@ -118,14 +122,15 @@ namespace Assignment2.Controllers
                     Account = await _dataAccess.GetUserAccount(accountNumber),
                     Comment = comment
                 });
-            //[Bind("AccountNumber, DestinationAccountNumber, Amount")]
         }
 
         [HttpPost]
-        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")] TransferModel viewModel)
+        public async Task<IActionResult> Transfer([Bind("AccountNumber, DestinationAccountNumber, Amount, Comment")]
+            TransferModel viewModel)
         {
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
-            viewModel.DestinationAccount = await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
+            viewModel.DestinationAccount =
+                await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -133,18 +138,20 @@ namespace Assignment2.Controllers
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
                 return View(viewModel);
             }
+
             // Check that the user has enough money to withdraw the desired amount.
             if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
                 return View(viewModel);
             }
+
             // Check whether the withdraw amount has more than 2 decimal places.
-            //if (viewModel.Amount.HasMoreThanTwoDecimalPlaces())
-            //{
-            //    ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
-            //    return View(viewModel);
-            //}
+            if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
+                return View(viewModel);
+            }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
@@ -166,13 +173,12 @@ namespace Assignment2.Controllers
                 Comment = viewModel.Comment,
                 ModifyDate = DateTime.UtcNow
             });
-            
+
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Transactions(int? accountNumber, int page = 1)
         {
-
             var transactionHistoryModel = new TransactionHistoryModel
             {
                 Accounts = new List<Account>(await _dataAccess.GetAccounts())
@@ -181,16 +187,17 @@ namespace Assignment2.Controllers
             switch (transactionHistoryModel.Accounts.Count)
             {
                 case 0:
-                    return RedirectToAction(actionName: "Error", controllerName:"Home");
+                    return RedirectToAction(actionName: "Error", controllerName: "Home");
                 case 1:
                     accountNumber = transactionHistoryModel.Accounts[0].AccountNumber;
                     break;
             }
 
-            if(accountNumber != null)
+            if (accountNumber != null)
             {
-                transactionHistoryModel.Transactions = await _dataAccess.GetPagedTransactions((int) accountNumber, page);
-                transactionHistoryModel.SelectedAccountNumber = (int)accountNumber;
+                transactionHistoryModel.Transactions =
+                    await _dataAccess.GetPagedTransactions((int) accountNumber, page);
+                transactionHistoryModel.SelectedAccountNumber = (int) accountNumber;
             }
 
             return View(transactionHistoryModel);

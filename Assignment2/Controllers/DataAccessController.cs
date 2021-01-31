@@ -54,6 +54,14 @@ namespace Assignment2.Controllers
         public Task<Account> GetAccountWithTransactions(int accountNumber);
 
         /// <summary>
+        /// Gets a specific account for the logged in user, loading in billPays with it
+        /// </summary>
+        /// <param name="accountNumber">The id of the account to retrieve</param>
+        /// <returns>The account retrieve with billPays populated</returns>
+        /// <exception cref="RecordMissingException">User owns no account with provided id</exception>
+        public Task<Account> GetUserAccountWithBillPays(int accountNumber);
+
+        /// <summary>
         /// Calculates the balance of the provided account
         /// </summary>
         /// <param name="account">The account to calculate a balance for</param>
@@ -66,7 +74,14 @@ namespace Assignment2.Controllers
         /// <param name="account">The account to add the transaction to</param>
         /// <param name="transaction">The transaction to add to the account</param>
         public Task AddTransaction(Account account, Transaction transaction);
-        
+
+        /// <summary>
+        /// Adds the provided billPay to the provided account
+        /// </summary>
+        /// <param name="account">The account to add the billPay to</param>
+        /// <param name="billPay">The billPay to add to the account</param>
+        public Task AddScheduledPayment(Account account, BillPay billPay);
+
         /// <summary>
         /// Generates a paged list of 4 transactions for the provided account (which the logged in user owns)
         /// </summary>
@@ -83,8 +98,25 @@ namespace Assignment2.Controllers
         /// <returns>The customer retrieved</returns>
         /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
         public Task<Customer> GetCustomer(int? customerId = null);
+        
+        /// <summary>
+        /// Gets a billPay with the provided billPay id
+        /// </summary>
+        /// <param name="billPayId">The id of the billPay to retrieve.</param>
+        /// <returns>The billPay retrieved</returns>
+        /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
+        public Task<BillPay> GetBillPay(int billPayId);
 
-
+        /// <summary>
+        /// Gets the bill payments for the provided account in a paged format
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account to get bill payments for</param>
+        /// <param name="page">The page to start at</param>
+        /// <returns>Bill payments for the provided account in a paged format</returns>
+        /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
+        public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
+        
+        
         public Task<List<Customer>> GetCustomersWithLogin();
         public Task LockCustomer(int customerId);
         public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
@@ -167,6 +199,19 @@ namespace Assignment2.Controllers
         }
 
         /// <summary>
+        /// Gets a specific account for the logged in user, loading in billPays with it
+        /// </summary>
+        /// <param name="accountNumber">The id of the account to retrieve</param>
+        /// <returns>The account retrieve with billPays populated</returns>
+        /// <exception cref="RecordMissingException">User owns no account with provided id</exception>
+        public async Task<Account> GetUserAccountWithBillPays(int accountNumber)
+        {
+            var account = await GetUserAccount(accountNumber);
+            await _context.Entry(account).Collection(a => a.BillPays).LoadAsync();
+            return account;
+        }
+
+        /// <summary>
         /// Gets an account, loading in transactions with it
         /// </summary>
         /// <param name="accountNumber">The id of the account to retrieve with transactions</param>
@@ -199,6 +244,17 @@ namespace Assignment2.Controllers
         public async Task AddTransaction(Account account, Transaction transaction)
         {
             account.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Adds the provided billPay to the provided account
+        /// </summary>
+        /// <param name="account">The account to add the billPay to</param>
+        /// <param name="billPay">The billPay to add to the account</param>
+        public async Task AddScheduledPayment(Account account, BillPay billPay)
+        {
+            account.BillPays.Add(billPay);
             await _context.SaveChangesAsync();
         }
 
@@ -245,6 +301,25 @@ namespace Assignment2.Controllers
         }
 
         /// <summary>
+        /// Gets a billPay with the provided billPay id
+        /// </summary>
+        /// <param name="billPayId">The id of the billPay to retrieve.</param>
+        /// <returns>The billPay retrieved</returns>
+        /// <exception cref="RecordMissingException">There was no customer id provided or there was a problem with the logged in customer</exception>
+        public async Task<BillPay> GetBillPay(int billPayId)
+        {
+            try
+            {
+                var billPay = await _context.BillPay.FirstAsync(c => c.BillPayId == billPayId);
+                return billPay;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new RecordMissingException("Found no billPay with provided billPay id");
+            }
+        }
+
+        /// <summary>
         /// Gets the customer object of the logged in user
         /// </summary>
         /// <returns>The customer object of the logged in user</returns>
@@ -270,6 +345,26 @@ namespace Assignment2.Controllers
 
             return user.Customer;
         }
+        
+        
+       /// <summary>
+       /// Gets the bill payments for the provided account in a paged format
+       /// </summary>
+       /// <param name="accountNumber">The account number of the account to get bill payments for</param>
+       /// <param name="page">The page to start at</param>
+       /// <returns>Bill payments for the provided account in a paged format</returns>
+       /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
+        public async Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page)
+        {
+            var account = await GetUserAccount(accountNumber);
+            
+            await _context.Entry(account).Collection(a => a.BillPays).LoadAsync();
+
+            return await account.BillPays
+                .OrderByDescending(billPay => billPay.ScheduleDate)
+                .ToPagedListAsync(page, 8);
+        }
+
 
         public async Task<List<Customer>> GetCustomersWithLogin()
         {

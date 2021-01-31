@@ -40,21 +40,15 @@ namespace Assignment2.Data
                     .WithOne(transaction => transaction.Account)
                     .HasForeignKey(transaction => transaction.AccountNumber);
 
-                entity.Property(account => account.AccountType)
-                    .HasConversion(accountType => (char) accountType,
-                        dbValue => (AccountType) dbValue);
+            builder.Entity<Payee>()
+                .HasMany(payee => payee.BillPays)
+                .WithOne(billPay => billPay.Payee)
+                .HasForeignKey(billPay => billPay.PayeeId);
             });
-
-            builder.Entity<Payee>(entity =>
-            {
-                entity.HasMany(payee => payee.BillPays)
-                    .WithOne(billPay => billPay.Payee)
-                    .HasForeignKey(billPay => billPay.PayeeId);
-
-                entity.Property(customer => customer.State)
-                    .HasConversion(state => state.ToString(),
-                        dbValue => Enum.Parse<State>(dbValue));
-            });
+            
+            builder.Entity<Payee>().Property(customer => customer.State)
+                .HasConversion(state => state.ToString(),
+                    dbValue => Enum.Parse<State>(dbValue));
 
             builder.Entity<ApplicationUser>()
                 .HasOne(login => login.Customer)
@@ -66,6 +60,11 @@ namespace Assignment2.Data
                 .Property(billPay => billPay.Period)
                 .HasConversion(period => period.ToString(),
                     dbValue => Enum.Parse<Period>(dbValue));
+
+            builder.Entity<BillPay>()
+                .Property(billPay => billPay.Status)
+                .HasConversion(status => status.ToString(),
+                    dbValue => Enum.Parse<Status>(dbValue));
 
 
             builder.Entity<Transaction>()
