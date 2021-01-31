@@ -41,7 +41,7 @@ namespace Assignment2.Models
         [Required, DataType(DataType.DateTime)]
         public DateTime ScheduleDate { get; set; }
 
-        [Required, StringLength(1)] 
+        [Required] 
         public Period Period { get; set; }
 
         [Required, DataType(DataType.DateTime)]

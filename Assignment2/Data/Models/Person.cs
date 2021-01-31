@@ -26,7 +26,6 @@ namespace Assignment2.Models
         [RegularExpression("[0-9]{4}")]
         public string PostCode { get; set; }
         
-        [StringLength(20)]
         public State State { get; set; }
 
         [Phone, Required, StringLength(15)]
