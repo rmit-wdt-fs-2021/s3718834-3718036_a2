@@ -54,7 +54,7 @@
                         <a asp-action="Delete" asp-route-billPayId="@item.BillPayId">Delete</a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.PayeeId)
+                        @Html.DisplayFor(modelItem => item.Payee.Name)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Amount)
