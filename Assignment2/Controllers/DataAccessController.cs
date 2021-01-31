@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Assignment2.Data;
+using Assignment2.Data.Seed;
 using Assignment2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -429,6 +430,7 @@ namespace Assignment2.Controllers
 
         public async Task<bool> PayeeExists(int payeeId)
         {
+            await DataSeeder.SeedPayee(_context);
             try
             {
                 await _context.Payee.FirstAsync(a => a.PayeeId == payeeId);

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Assignment2.Data;
 using Microsoft.EntityFrameworkCore;
+using Assignment2.Data.Seed;
 
 namespace Assignment2.Areas.Identity.Pages.Account
 {
@@ -108,6 +109,7 @@ namespace Assignment2.Areas.Identity.Pages.Account
                     Phone = RegisterInput.Phone
                 };
                 await _context.Customer.AddAsync(customer);
+                await DataSeeder.SeedAccounts(customer.CustomerId, _context);
 
                 var user = new ApplicationUser
                 {
