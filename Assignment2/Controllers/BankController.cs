@@ -142,6 +142,13 @@ namespace Assignment2.Controllers
                 await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
             decimal balance = await _dataAccess.GetAccountBalance(viewModel.Account);
 
+            // Check that the user is not trying to send money to the account they are sending it from (i.e. 4100 -> 4100)
+            if(viewModel.DestinationAccountNumber == viewModel.AccountNumber)
+            {
+                ModelState.AddModelError(nameof(viewModel.DestinationAccountNumber), "You cannot transfer money to the same account.");
+                return View(viewModel);
+            }
+
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
             {
