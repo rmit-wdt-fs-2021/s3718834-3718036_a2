@@ -24,7 +24,8 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
 
-                    b.Property<char>("AccountType")
+                    b.Property<string>("AccountType")
+                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
@@ -143,7 +144,8 @@ namespace Assignment2.Data.Migrations
                     b.Property<int>("PayeeId")
                         .HasColumnType("int");
 
-                    b.Property<char>("Period")
+                    b.Property<string>("Period")
+                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
@@ -273,7 +275,8 @@ namespace Assignment2.Data.Migrations
                     b.Property<DateTime>("ModifyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<char>("TransactionType")
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(1)");
 
                     b.HasKey("TransactionId");

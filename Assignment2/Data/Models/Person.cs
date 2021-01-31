@@ -2,6 +2,15 @@
 
 namespace Assignment2.Models
 {
+    public enum State
+    {
+        Vic,
+        Nsw,
+        Sa,
+        Qld,
+        Tas
+    }
+
     public abstract class Person
     {
         [Required, StringLength(50)]

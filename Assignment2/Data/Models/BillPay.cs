@@ -9,9 +9,9 @@ namespace Assignment2.Models
 {
     public enum Period
     {
-        Monthly, 
-        Quarterly,
-        OnceOff
+        Monthly = 'M', 
+        Quarterly = 'Q',
+        OnceOff = 'O'
     }
 
     public enum Status
