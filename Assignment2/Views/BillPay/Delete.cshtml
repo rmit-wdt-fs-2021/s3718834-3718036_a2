@@ -33,7 +33,7 @@
             @Html.DisplayNameFor(model => model.ScheduleDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ScheduleDate.ToLocalTime())
+           @Model.ScheduleDate.ToLocalTime()
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Period)
@@ -45,7 +45,7 @@
             @Html.DisplayNameFor(model => model.ModifyDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ModifyDate.ToLocalTime())
+            @Model.ModifyDate.ToLocalTime()
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Status)

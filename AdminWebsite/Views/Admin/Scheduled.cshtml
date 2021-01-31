@@ -47,13 +47,13 @@
                 @Html.DisplayFor(modelItem => item.Amount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ScheduleDate.ToLocalTime())
+                @item.ScheduleDate.ToLocalTime()
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Period)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ModifyDate.ToLocalTime())
+                @item.ModifyDate.ToLocalTime()
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
