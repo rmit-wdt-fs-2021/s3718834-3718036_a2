@@ -1,0 +1,86 @@
+﻿@model AdminWebsite.ViewModels.AdminTransactionsViewModel
+
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+
+<form asp-action="Transactions">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="CustomerId" class="control-label"></label>
+        <input asp-for="CustomerId" class="form-control" />
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="StartDate" class="control-label"></label>
+        <input asp-for="StartDate" class="form-control" value="@Model.StartDate" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EndDate" class="control-label"></label>
+        <input asp-for="EndDate" class="form-control" value="@Model.EndDate" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+
+
+@if (Model.Transactions != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].TransactionType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].AccountNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].DestAccount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].Comment)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Transactions[0].ModifyDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Transactions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TransactionType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountNumber)
+                    </td>
+                    <td>
+                        @if (item.DestAccount != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.DestAccount)
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comment)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ModifyDate)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

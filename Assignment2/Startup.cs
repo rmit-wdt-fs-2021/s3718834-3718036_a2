@@ -38,8 +38,11 @@ namespace Assignment2
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
+            services.AddIdentity<ApplicationUser, IdentityRole<string>>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddDefaultUI()
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
 
             services.AddTransient<IEmailSender, EmailService>();

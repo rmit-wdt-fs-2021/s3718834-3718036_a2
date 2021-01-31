@@ -27,6 +27,8 @@ namespace Assignment2.Models
         [StringLength(11)]
         public string Tfn { get; set; }
 
+        public string LoginId { get; set; }
+
         public List<Account> Accounts { get; set; }
 
         public ApplicationUser Login { get; set; }

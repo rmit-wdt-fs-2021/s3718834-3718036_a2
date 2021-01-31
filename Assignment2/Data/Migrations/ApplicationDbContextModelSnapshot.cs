@@ -70,9 +70,6 @@ namespace Assignment2.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -114,9 +111,6 @@ namespace Assignment2.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId")
-                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -181,6 +175,9 @@ namespace Assignment2.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<string>("LoginId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -203,6 +200,10 @@ namespace Assignment2.Data.Migrations
                         .HasColumnType("nvarchar(11)");
 
                     b.HasKey("CustomerId");
+
+                    b.HasIndex("LoginId")
+                        .IsUnique()
+                        .HasFilter("[LoginId] IS NOT NULL");
 
                     b.ToTable("Customer");
                 });
@@ -423,17 +424,6 @@ namespace Assignment2.Data.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Assignment2.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Assignment2.Models.Customer", "Customer")
-                        .WithOne("Login")
-                        .HasForeignKey("Assignment2.Models.ApplicationUser", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Assignment2.Models.BillPay", b =>
                 {
                     b.HasOne("Assignment2.Models.Account", "Account")
@@ -451,6 +441,15 @@ namespace Assignment2.Data.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Payee");
+                });
+
+            modelBuilder.Entity("Assignment2.Models.Customer", b =>
+                {
+                    b.HasOne("Assignment2.Models.ApplicationUser", "Login")
+                        .WithOne("Customer")
+                        .HasForeignKey("Assignment2.Models.Customer", "LoginId");
+
+                    b.Navigation("Login");
                 });
 
             modelBuilder.Entity("Assignment2.Models.Transaction", b =>
@@ -522,11 +521,14 @@ namespace Assignment2.Data.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("Assignment2.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Assignment2.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
-
-                    b.Navigation("Login");
                 });
 
             modelBuilder.Entity("Assignment2.Models.Payee", b =>
