@@ -116,17 +116,16 @@ namespace Assignment2.Controllers
         /// /// <exception cref="RecordMissingException">User doesn't own an account with the provided account number</exception>
         public Task<IPagedList<BillPay>> GetPagedBillPayments(int accountNumber, int page);
 
-
         public Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType);
 
         public Task<int> GetTransactionsWithFees(int accountNumber);
 
         public Task<Payee> GetPayee(int payeeId);
 
-        
-        
         public Task<List<Customer>> GetCustomersWithLogin();
+
         public Task LockCustomer(int customerId);
+
         public Task<List<Transaction>> GetFilteredTransactions(DateTime minDate, DateTime maxDate, int? customerId = null);
 
         public Task<List<BillPay>> GetScheduledPayments();
@@ -422,6 +421,8 @@ namespace Assignment2.Controllers
             catch (InvalidOperationException)
             {
                 throw new RecordMissingException("No payee with provided PayeeId found.");
+            }
+        }
 
         public async Task<List<Customer>> GetCustomersWithLogin()
         {
@@ -489,6 +490,7 @@ namespace Assignment2.Controllers
             }
         }
     }
+
 
     /// <summary>
     /// Thrown when the database proxy didn't find a record
