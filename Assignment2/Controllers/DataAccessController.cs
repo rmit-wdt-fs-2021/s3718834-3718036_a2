@@ -11,7 +11,7 @@ using X.PagedList;
 
 namespace Assignment2.Controllers
 {
-    public interface IDataAccessProvider
+    public interface IDataAccessRepository
     {
         /// <summary>
         /// Gets the accounts for provided customer or defaults to the currently logged in user
@@ -154,7 +154,7 @@ namespace Assignment2.Controllers
     /// <summary>
     /// Provides access to the database for other classes to reduce repeated code and decrease coupling. 
     /// </summary>
-    public class DataAccessController : IDataAccessProvider
+    public class DataAccessController : IDataAccessRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager; // Used to access the currently logged in user

@@ -29,7 +29,7 @@ namespace Assignment2.BackgroundServices
         {
             using var scope = _serviceProvider.CreateScope(); // Create a scope to access needed services
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var dataAccessProvider = scope.ServiceProvider.GetRequiredService<IDataAccessProvider>();
+            var dataAccessProvider = scope.ServiceProvider.GetRequiredService<IDataAccessRepository>();
 
             while (!cancellationToken.IsCancellationRequested)
             {

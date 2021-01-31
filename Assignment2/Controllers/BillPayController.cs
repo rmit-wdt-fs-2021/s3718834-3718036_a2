@@ -17,9 +17,9 @@ namespace Assignment2.Controllers
     public class BillPayController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IDataAccessProvider _dataAccess;
+        private readonly IDataAccessRepository _dataAccess;
 
-        public BillPayController(ApplicationDbContext context, IDataAccessProvider dataAccess)
+        public BillPayController(ApplicationDbContext context, IDataAccessRepository dataAccess)
         {
             _context = context;
             _dataAccess = dataAccess;

@@ -47,7 +47,7 @@ namespace AdminAPI
             services.AddControllersWithViews();
 
 
-            services.AddScoped<IDataAccessProvider, DataAccessController>();
+            services.AddScoped<IDataAccessRepository, DataAccessController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,9 +16,9 @@ namespace AdminAPI.Controllers
     public class AdminController : ControllerBase
     {
 
-        private readonly IDataAccessProvider _dataAccess; 
+        private readonly IDataAccessRepository _dataAccess; 
 
-        public AdminController(IDataAccessProvider dataAccess)
+        public AdminController(IDataAccessRepository dataAccess)
         {
             _dataAccess = dataAccess;
         }

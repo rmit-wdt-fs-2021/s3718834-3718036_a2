@@ -50,7 +50,7 @@ namespace Assignment2
 
             services.AddScoped<IActivityReportService, ActivityReportService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IDataAccessProvider, DataAccessController>();
+            services.AddScoped<IDataAccessRepository, DataAccessController>();
 
 
             services.AddHostedService<ActivityReportScheduler>(); // Comment out to disable activity reports

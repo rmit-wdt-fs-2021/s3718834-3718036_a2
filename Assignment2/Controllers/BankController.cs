@@ -11,9 +11,9 @@ namespace Assignment2.Controllers
     [Authorize(Roles ="Customer")]
     public class BankController : Controller
     {
-        private readonly IDataAccessProvider _dataAccess;
+        private readonly IDataAccessRepository _dataAccess;
 
-        public BankController(IDataAccessProvider dataAccess)
+        public BankController(IDataAccessRepository dataAccess)
         {
             _dataAccess = dataAccess;
         }

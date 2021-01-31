@@ -40,14 +40,14 @@ namespace Assignment2.Models
 
         public List<BillPay> BillPays { get; set; }
 
-        public async Task<decimal> Balance(IDataAccessProvider dataAccessProvider)
+        public async Task<decimal> Balance(IDataAccessRepository dataAccessProvider)
         {
             _balance ??= await dataAccessProvider.GetAccountBalance(this);
 
             return (decimal)_balance;
         }
 
-        public async Task<decimal> UpdateBalance(decimal amount, IDataAccessProvider dataAccessProvider)
+        public async Task<decimal> UpdateBalance(decimal amount, IDataAccessRepository dataAccessProvider)
         {
             if (_balance == null)
             {
