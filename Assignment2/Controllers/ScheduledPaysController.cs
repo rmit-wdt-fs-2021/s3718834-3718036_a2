@@ -98,15 +98,6 @@ namespace Assignment2.Controllers
                 _context.Add(billPay);
                 await _context.SaveChangesAsync();
 
-                await selectedAccount.UpdateBalance(billPay.Amount, _dataAccess);
-                await _dataAccess.AddTransaction(selectedAccount, new Transaction
-                {
-                    AccountNumber = billPay.AccountNumber,
-                    TransactionType = TransactionType.BillPay,
-                    Amount = billPay.Amount,
-                    ModifyDate = DateTime.UtcNow
-                });
-
                 return RedirectToAction(nameof(Index));
             }
             return View(billPay);

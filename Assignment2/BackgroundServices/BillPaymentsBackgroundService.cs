@@ -40,7 +40,7 @@ namespace Assignment2.BackgroundServices
                 {
                     if (billPay.Status == Status.Waiting && billPay.Period == Period.OnceOff)
                     {
-                        await context.Entry(billPay).Reference(b => billPay.Account).LoadAsync();
+                        await context.Entry(billPay).Reference(b => b.Account).LoadAsync();
                         await context.Entry(billPay.Account).Collection(a => a.Transactions).LoadAsync();
 
                         if (await billPay.Account.Balance(dataAccessProvider) < billPay.Amount)
