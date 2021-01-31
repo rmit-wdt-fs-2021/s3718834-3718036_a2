@@ -119,6 +119,8 @@ namespace Assignment2.Controllers
         public Task<int> GetTransactionWithType(int accountNumber, TransactionType transactionType);
 
         public Task<int> GetTransactionsWithFees(int accountNumber);
+
+        public Task<Payee> GetPayee(int payeeId);
     }
 
     /// <summary>
@@ -390,6 +392,26 @@ namespace Assignment2.Controllers
             int totalWithdraws = await GetTransactionWithType(accountNumber, TransactionType.Withdraw);
 
             return totalTransfers + totalWithdraws;
+        }
+
+
+        /// <summary>
+        /// Gets a payee with specified id as defined by the user.
+        /// </summary>
+        /// <param name="payeeId"></param>
+        /// <returns>The payee object</returns>
+        /// <exception cref="RecordMissingException">The Payee object doesn't exist</exception>
+        public async Task<Payee> GetPayee(int payeeId)
+        {
+            try
+            {
+                var result = await _context.Payee.FirstAsync(a => a.PayeeId == payeeId);
+                return result;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new RecordMissingException("No payee with provided PayeeId found.");
+            }
         }
     }
 
