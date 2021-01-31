@@ -110,6 +110,19 @@ namespace Assignment2.Controllers
                 return View(viewModel);
             }
 
+            // Charge the user a service fee if they have used up the free transactions.
+            if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
+            {
+                await viewModel.Account.UpdateBalance((decimal) 0.10, _dataAccess);
+                await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    TransactionType = TransactionType.ServiceCharge,
+                    Amount = (decimal) 0.10,
+                    ModifyDate = DateTime.UtcNow
+                });
+            }
+
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
             await _dataAccess.AddTransaction(viewModel.Account, new Transaction
             {
@@ -170,10 +183,24 @@ namespace Assignment2.Controllers
             }
 
             // Check whether the withdraw amount has more than 2 decimal places.
+            // Code originally sourced from tutorial 5
             if (decimal.Round(viewModel.Amount, 2) != viewModel.Amount)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount cannot have more than 2 decimal places.");
                 return View(viewModel);
+            }
+
+            // Charge the user a service fee if they have used up the free transactions.
+            if (await _dataAccess.GetTransactionsWithFees(viewModel.AccountNumber) >= 4)
+            {
+                await viewModel.Account.UpdateBalance((decimal)0.20, _dataAccess);
+                await _dataAccess.AddTransaction(viewModel.Account, new Transaction
+                {
+                    AccountNumber = viewModel.AccountNumber,
+                    TransactionType = TransactionType.ServiceCharge,
+                    Amount = (decimal)0.10,
+                    ModifyDate = DateTime.UtcNow
+                });
             }
 
             await viewModel.Account.UpdateBalance(viewModel.Amount, _dataAccess);
