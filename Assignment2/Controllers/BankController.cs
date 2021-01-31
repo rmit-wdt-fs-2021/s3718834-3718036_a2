@@ -74,10 +74,12 @@ namespace Assignment2.Controllers
                 });
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Withdraw([Bind("AccountNumber, Amount")] AtmTransactionViewModel viewModel)
         {
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
+            decimal balance = await _dataAccess.GetAccountBalance(viewModel.Account);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
@@ -90,6 +92,13 @@ namespace Assignment2.Controllers
             if (viewModel.Amount > await viewModel.Account.Balance(_dataAccess))
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not exceed current balance.");
+                return View(viewModel);
+            }
+
+            // Check that the user would not go below the minimum balance requirements of their accounts when withdrawing.
+            if((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount < 200))
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                 return View(viewModel);
             }
 
@@ -131,11 +140,18 @@ namespace Assignment2.Controllers
             viewModel.Account = await _dataAccess.GetUserAccountWithTransactions(viewModel.AccountNumber);
             viewModel.DestinationAccount =
                 await _dataAccess.GetAccountWithTransactions(viewModel.DestinationAccountNumber);
+            decimal balance = await _dataAccess.GetAccountBalance(viewModel.Account);
 
             // Check that the withdraw amount is a positive integer.
             if (viewModel.Amount <= 0)
             {
                 ModelState.AddModelError(nameof(viewModel.Amount), "Amount must be positive.");
+                return View(viewModel);
+            }
+
+            if ((viewModel.Account.AccountType == AccountType.Checking) && (balance - viewModel.Amount < 200))
+            {
+                ModelState.AddModelError(nameof(viewModel.Amount), "Amount must not go lower than the minimum balance requirements of $200.00.");
                 return View(viewModel);
             }
 
